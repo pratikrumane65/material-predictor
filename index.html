@@ -7,7 +7,7 @@
 <style>
 body {
   font-family: Arial;
-  background: #000;
+  background: black;
   color: white;
   text-align: center;
   padding: 20px;
@@ -19,10 +19,9 @@ body {
   border-radius: 15px;
   max-width: 400px;
   margin: auto;
-  animation: fade 1s ease;
 }
 
-input, select {
+input {
   width: 90%;
   padding: 12px;
   margin: 8px;
@@ -38,16 +37,16 @@ button {
   border: none;
   border-radius: 8px;
   font-size: 16px;
-  transition: 0.3s;
 }
 
-button:hover {
-  transform: scale(1.05);
+.app-box {
+  text-align: left;
+  margin: 10px;
 }
 
-@keyframes fade {
-  from {opacity:0; transform: translateY(20px);}
-  to {opacity:1; transform: translateY(0);}
+.app-box label {
+  display: block;
+  margin: 5px;
 }
 </style>
 </head>
@@ -57,25 +56,41 @@ button:hover {
 <h2>🤖 AI Material Predictor</h2>
 
 <div class="container">
-  <input id="force" placeholder="Force (N)">
-  <input id="area" placeholder="Area (mm²)">
-  <input id="temp" placeholder="Temperature (°C)">
 
-  <select id="app">
-    <option>Automotive</option>
-    <option>Aerospace</option>
-    <option>Structural</option>
-  </select>
+<input id="force" placeholder="Force (N)">
+<input id="area" placeholder="Area (mm²)">
+<input id="temp" placeholder="Temperature (°C)">
 
-  <button onclick="go()">Predict</button>
+<div class="app-box">
+  <label><input type="checkbox" value="Automotive"> Automotive</label>
+  <label><input type="checkbox" value="Aerospace"> Aerospace</label>
+  <label><input type="checkbox" value="Structural"> Structural</label>
+  <label><input type="checkbox" value="Marine"> Marine</label>
+  <label><input type="checkbox" value="Biomedical"> Biomedical</label>
+</div>
+
+<button onclick="go()">Predict</button>
+
 </div>
 
 <script>
 function go(){
+
   let f = document.getElementById("force").value;
   let a = document.getElementById("area").value;
   let t = document.getElementById("temp").value;
-  let app = document.getElementById("app").value;
+
+  let selected = [];
+  document.querySelectorAll('.app-box input:checked').forEach(el=>{
+    selected.push(el.value);
+  });
+
+  if(selected.length === 0){
+    alert("Select at least one application");
+    return;
+  }
+
+  let app = selected.join(",");
 
   window.open(
     `result.html?f=${f}&a=${a}&t=${t}&app=${app}`,
