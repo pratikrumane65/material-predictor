@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Material Predictor</title>
+<title>AI Material Predictor</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -15,12 +15,19 @@ body {
   padding: 20px;
 }
 
+/* 🔥 ANIMATION */
 .container {
   background: #111;
   padding: 20px;
   border-radius: 15px;
   max-width: 350px;
   margin: auto;
+  animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform: translateY(20px);}
+  to {opacity:1; transform: translateY(0);}
 }
 
 input, select {
@@ -38,9 +45,13 @@ button {
   padding: 12px;
   background: #fff;
   color: #000;
-  border: none;
   border-radius: 10px;
-  font-size: 16px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #ccc;
 }
 
 .result {
@@ -48,6 +59,7 @@ button {
   padding: 15px;
   background: #111;
   border-radius: 10px;
+  animation: fadeIn 0.5s ease;
 }
 
 canvas {
@@ -60,7 +72,7 @@ canvas {
 
 <body>
 
-<h2>⚙ Smart Material Predictor</h2>
+<h2>🤖 AI Material Predictor</h2>
 
 <div class="container">
 
@@ -102,62 +114,57 @@ if(isNaN(f) || isNaN(a)){
 
 let stress = f/a;
 
-let material="", strength=0, cost=0;
+/* 🤖 SIMPLE ML MODEL (REGRESSION TYPE LOGIC)
+   strength ≈ w1*temp + w2*stress + bias
+*/
 
-if(app==="Aerospace" || t>300){
-  material="Titanium Alloy"; strength=900; cost=1500;
-}
-else if(app==="Automotive"){
-  material="Aluminum Alloy"; strength=300; cost=800;
-}
-else{
-  material="Mild Steel"; strength=250; cost=400;
-}
+let strength = (0.5 * t) + (2 * stress) + 200;
+let cost = (0.3 * strength) + 100;
+
+/* Material classification */
+let material = "Mild Steel";
+if(strength > 800) material = "Titanium Alloy";
+else if(strength > 400) material = "Aluminum Alloy";
 
 let fos = (strength/stress).toFixed(2);
 
-// ✅ FIXED OUTPUT
+/* OUTPUT */
 document.getElementById("output").innerHTML = `
 <b>Material:</b> ${material}<br>
+<b>Predicted Strength:</b> ${strength.toFixed(2)}<br>
 <b>Stress:</b> ${stress.toFixed(2)}<br>
 <b>FOS:</b> ${fos}<br>
-<b>Cost:</b> ₹${cost}
+<b>Estimated Cost:</b> ₹${cost.toFixed(0)}
 `;
 
 
-// GRAPH 1
+/* GRAPH 1 */
 if(chart1) chart1.destroy();
 chart1 = new Chart(document.getElementById("c1"), {
   type: 'bar',
   data: {
     labels: ['Stress','Strength'],
-    datasets: [{
-      data: [stress, strength]
-    }]
+    datasets: [{data: [stress, strength]}]
   }
 });
 
-// GRAPH 2
+/* GRAPH 2 */
 if(chart2) chart2.destroy();
 chart2 = new Chart(document.getElementById("c2"), {
   type: 'line',
   data: {
     labels: ['Applied','Limit'],
-    datasets: [{
-      data: [stress, strength]
-    }]
+    datasets: [{data: [stress, strength]}]
   }
 });
 
-// GRAPH 3
+/* GRAPH 3 */
 if(chart3) chart3.destroy();
 chart3 = new Chart(document.getElementById("c3"), {
   type: 'pie',
   data: {
-    labels: ['Selected','Alternative'],
-    datasets: [{
-      data: [cost, cost+500]
-    }]
+    labels: ['Material Cost','Extra'],
+    datasets: [{data: [cost, cost+300]}]
   }
 });
 
