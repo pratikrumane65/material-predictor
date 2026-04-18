@@ -5,47 +5,37 @@
 <title>AI Material Predictor</title>
 
 <style>
-body {
-  background: black;
-  color: white;
+body{
   font-family: Arial;
-  text-align: center;
-  padding: 20px;
+  background:black;
+  color:white;
+  text-align:center;
+  padding:20px;
 }
 
-.container {
-  background: #111;
-  padding: 20px;
-  border-radius: 15px;
-  max-width: 400px;
-  margin: auto;
+.container{
+  background:#111;
+  padding:20px;
+  border-radius:15px;
+  max-width:350px;
+  margin:auto;
 }
 
-input {
-  width: 90%;
-  padding: 12px;
-  margin: 8px;
-  border-radius: 8px;
-  border: none;
+input, select{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:10px;
+  border:none;
 }
 
-button {
-  width: 90%;
-  padding: 12px;
-  background: white;
-  color: black;
-  border: none;
-  border-radius: 8px;
-}
-
-/* Radio style */
-.app-box {
-  text-align: left;
-  margin: 10px;
-}
-.app-box label {
-  display: block;
-  margin: 5px;
+button{
+  width:100%;
+  padding:12px;
+  background:#ccc;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
 }
 </style>
 </head>
@@ -60,18 +50,20 @@ button {
 <input id="area" placeholder="Area (mm²)">
 <input id="temp" placeholder="Temperature (°C)">
 
-<div class="app-box">
-<label><input type="radio" name="app" value="Automotive"> Automotive</label>
-<label><input type="radio" name="app" value="Aerospace"> Aerospace</label>
-<label><input type="radio" name="app" value="Structural"> Structural</label>
-<label><input type="radio" name="app" value="Marine"> Marine</label>
-<label><input type="radio" name="app" value="Biomedical"> Biomedical</label>
-<label><input type="radio" name="app" value="Tooling"> Tooling</label>
-<label><input type="radio" name="app" value="Thermal"> Thermal</label>
-<label><input type="radio" name="app" value="Electrical"> Electrical</label>
-<label><input type="radio" name="app" value="Heavy Load"> Heavy Load</label>
-<label><input type="radio" name="app" value="Lightweight"> Lightweight</label>
-</div>
+<label>Select Application</label>
+
+<select id="app" size="5" style="background:#000;color:#fff;">
+  <option>Automotive</option>
+  <option>Aerospace</option>
+  <option>Structural</option>
+  <option>Marine</option>
+  <option>Biomedical</option>
+  <option>Tooling</option>
+  <option>Thermal</option>
+  <option>Electrical</option>
+  <option>Heavy Load</option>
+  <option>Lightweight</option>
+</select>
 
 <button onclick="go()">Predict</button>
 
@@ -79,22 +71,13 @@ button {
 
 <script>
 function go(){
+  let f = document.getElementById("force").value;
+  let a = document.getElementById("area").value;
+  let t = document.getElementById("temp").value;
+  let app = document.getElementById("app").value;
 
-let f = document.getElementById("force").value;
-let a = document.getElementById("area").value;
-let t = document.getElementById("temp").value;
-
-let app = document.querySelector('input[name="app"]:checked');
-
-if(!app){
-  alert("Select one application");
-  return;
-}
-
-window.open(
-  `result.html?f=${f}&a=${a}&t=${t}&app=${app.value}`,
-  "_blank"
-);
+  window.location.href =
+    "result.html?f="+f+"&a="+a+"&t="+t+"&app="+app;
 }
 </script>
 
