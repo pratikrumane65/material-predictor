@@ -2,7 +2,9 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Material Predictor</title>
+<title>Smart Material Predictor</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body {
@@ -12,6 +14,7 @@ body {
   text-align: center;
   padding: 20px;
 }
+
 .container {
   background: rgba(255,255,255,0.1);
   padding: 20px;
@@ -19,6 +22,7 @@ body {
   max-width: 350px;
   margin: auto;
 }
+
 input, select {
   width: 100%;
   padding: 12px;
@@ -26,6 +30,7 @@ input, select {
   border-radius: 10px;
   border: none;
 }
+
 button {
   width: 100%;
   padding: 12px;
@@ -33,64 +38,131 @@ button {
   color: white;
   border: none;
   border-radius: 10px;
+  font-size: 16px;
 }
+
 .result {
   margin-top: 20px;
   padding: 15px;
   border-radius: 10px;
   background: rgba(255,255,255,0.2);
 }
+
+canvas {
+  margin-top: 20px;
+  background: white;
+  border-radius: 10px;
+}
 </style>
 </head>
 
 <body>
 
-<h2>Smart Material Predictor</h2>
+<h2>🔧 Smart Material Predictor</h2>
 
 <div class="container">
-  <input id="force" placeholder="Force (N)">
-  <input id="area" placeholder="Area (mm²)">
-  <input id="temp" placeholder="Temperature (°C)">
 
-  <select id="app">
-    <option>Automotive</option>
-    <option>Aerospace</option>
-    <option>Structural</option>
-  </select>
+<input id="force" placeholder="Force (N)">
+<input id="area" placeholder="Area (mm²)">
+<input id="temp" placeholder="Temperature (°C)">
 
-  <button onclick="run()">Predict</button>
+<select id="app">
+<option>Automotive</option>
+<option>Aerospace</option>
+<option>Structural</option>
+</select>
 
-  <div id="output" class="result"></div>
+<button onclick="run()">Predict</button>
+
+<div id="output" class="result"></div>
+
+<canvas id="chart1"></canvas>
+<canvas id="chart2"></canvas>
+<canvas id="chart3"></canvas>
+
 </div>
 
 <script>
+
+let chart1, chart2, chart3;
+
 function run(){
-  let f = parseFloat(document.getElementById("force").value);
-  let a = parseFloat(document.getElementById("area").value);
-  let t = parseFloat(document.getElementById("temp").value);
-  let app = document.getElementById("app").value;
 
-  let stress = f/a;
+let f = parseFloat(document.getElementById("force").value);
+let a = parseFloat(document.getElementById("area").value);
+let t = parseFloat(document.getElementById("temp").value);
+let app = document.getElementById("app").value;
 
-  let material="", strength=0, cost=0;
-
-  if(app==="Aerospace" || t>300){
-    material="Titanium Alloy"; strength=900; cost=1500;
-  }
-  else if(app==="Automotive"){
-    material="Aluminum Alloy"; strength=300; cost=800;
-  }
-  else{
-    material="Mild Steel"; strength=250; cost=400;
-  }
-
-  let fos = (strength/stress).toFixed(2);
-
-  document.getElementById("output").innerHTML =
-    "<b>Material:</b> "+material+
-    "<br><b>FOS:</b> "+fos+
-    "<br><b>Cost:</b> ₹"+cost;
+if(!f || !a){
+  alert("Enter valid values");
+  return;
 }
+
+let stress = f/a;
+
+let material="", strength=0, cost=0;
+
+if(app==="Aerospace" || t>300){
+  material="Titanium Alloy"; strength=900; cost=1500;
+}
+else if(app==="Automotive"){
+  material="Aluminum Alloy"; strength=300; cost=800;
+}
+else{
+  material="Mild Steel"; strength=250; cost=400;
+}
+
+let fos = (strength/stress).toFixed(2);
+
+document.getElementById("output").innerHTML =
+"<b>Material:</b> "+material+
+"<br><b>Stress:</b> "+stress.toFixed(2)+
+"<br><b>FOS:</b> "+fos+
+"<br><b>Cost:</b> ₹"+cost;
+
+
+// GRAPH 1: Stress vs Strength
+if(chart1) chart1.destroy();
+chart1 = new Chart(document.getElementById("chart1"), {
+  type: 'bar',
+  data: {
+    labels: ['Stress','Strength'],
+    datasets: [{
+      label: 'Comparison',
+      data: [stress, strength]
+    }]
+  }
+});
+
+
+// GRAPH 2: Failure Risk
+if(chart2) chart2.destroy();
+chart2 = new Chart(document.getElementById("chart2"), {
+  type: 'line',
+  data: {
+    labels: ['Applied Stress','Material Limit'],
+    datasets: [{
+      label: 'Failure Check',
+      data: [stress, strength]
+    }]
+  }
+});
+
+
+// GRAPH 3: Cost Comparison
+if(chart3) chart3.destroy();
+chart3 = new Chart(document.getElementById("chart3"), {
+  type: 'pie',
+  data: {
+    labels: ['Selected','Alternative'],
+    datasets: [{
+      data: [cost, cost+500]
+    }]
+  }
+});
+
+}
+
 </script>
 
 </body>
