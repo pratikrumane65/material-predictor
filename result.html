@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Result</title>
+<title>Result</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -21,7 +21,6 @@ body {
   border-radius: 15px;
   margin: 15px auto;
   max-width: 400px;
-  animation: fade 1s ease;
 }
 
 canvas {
@@ -29,17 +28,12 @@ canvas {
   border-radius: 10px;
   margin-top: 20px;
 }
-
-@keyframes fade {
-  from {opacity:0; transform: translateY(20px);}
-  to {opacity:1; transform: translateY(0);}
-}
 </style>
 </head>
 
 <body>
 
-<h2>🤖 AI Material Analysis</h2>
+<h2>📊 Material Result</h2>
 
 <div class="box" id="output"></div>
 
@@ -48,55 +42,65 @@ canvas {
 <canvas id="c3"></canvas>
 
 <script>
-// GET INPUT
+
+// GET DATA
 let url = new URLSearchParams(window.location.search);
+
 let f = parseFloat(url.get("f"));
 let a = parseFloat(url.get("a"));
 let t = parseFloat(url.get("t"));
-let app = url.get("app");
+let app = url.get("app").split(",");
 
-// STRESS
+// CALCULATE STRESS
 let stress = f / a;
 
-// 🔥 AI-LIKE MODEL (dynamic logic)
-let baseStrength, material, baseCost;
+// MATERIAL LOGIC
+let material = "";
+let baseStrength = 0;
+let baseCost = 0;
 
-// Application based base values
-if(app=="Aerospace"){
-  baseStrength = 850;
+if(app.includes("Aerospace")){
   material = "Titanium Alloy";
+  baseStrength = 900;
   baseCost = 1500;
 }
-else if(app=="Automotive"){
-  baseStrength = 320;
+else if(app.includes("Automotive")){
   material = "Aluminium Alloy";
+  baseStrength = 320;
   baseCost = 800;
 }
-else{
-  baseStrength = 260;
+else if(app.includes("Structural")){
   material = "Mild Steel";
+  baseStrength = 250;
   baseCost = 400;
 }
+else if(app.includes("Marine")){
+  material = "Stainless Steel";
+  baseStrength = 500;
+  baseCost = 900;
+}
+else{
+  material = "Composite Material";
+  baseStrength = 700;
+  baseCost = 1200;
+}
 
-// Temperature effect (AI behavior)
-let tempFactor = 1 - (t / 1000);   // high temp → reduce strength
-
-// Stress effect (AI behavior)
+// AI EFFECT
+let tempFactor = 1 - (t / 1000);
 let stressFactor = 1 - (stress / 1000);
 
-// FINAL PREDICTED STRENGTH
-let predictedStrength = baseStrength * tempFactor * stressFactor;
-
-// COST ESTIMATION (AI style)
-let cost = baseCost + (t * 2) + (stress * 5);
+let strength = baseStrength * tempFactor * stressFactor;
 
 // FOS
-let fos = (predictedStrength / stress).toFixed(2);
+let fos = (strength / stress).toFixed(2);
+
+// COST
+let cost = baseCost + (t * 2) + (stress * 5);
 
 // OUTPUT
 document.getElementById("output").innerHTML = `
 <b>Material:</b> ${material}<br>
-<b>Predicted Strength:</b> ${predictedStrength.toFixed(2)}<br>
+<b>Strength:</b> ${strength.toFixed(2)}<br>
 <b>Stress:</b> ${stress.toFixed(2)}<br>
 <b>FOS:</b> ${fos}<br>
 <b>Estimated Cost:</b> ₹${Math.round(cost)}
@@ -109,10 +113,9 @@ new Chart(document.getElementById("c1"), {
     labels:['Stress','Strength'],
     datasets:[{
       label:'Comparison',
-      data:[stress,predictedStrength]
+      data:[stress,strength]
     }]
-  },
-  options:{animation:{duration:1500}}
+  }
 });
 
 // GRAPH 2
@@ -121,11 +124,10 @@ new Chart(document.getElementById("c2"), {
   data:{
     labels:['Applied','Limit'],
     datasets:[{
-      label:'Failure Risk',
-      data:[stress,predictedStrength]
+      label:'Failure Check',
+      data:[stress,strength]
     }]
-  },
-  options:{animation:{duration:1500}}
+  }
 });
 
 // GRAPH 3
@@ -136,9 +138,9 @@ new Chart(document.getElementById("c3"), {
     datasets:[{
       data:[cost, 3000-cost]
     }]
-  },
-  options:{animation:{duration:1500}}
+  }
 });
+
 </script>
 
 </body>
