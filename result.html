@@ -2,30 +2,30 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Result</title>
+<title>Material Result</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body {
-  background: black;
-  color: white;
+body{
   font-family: Arial;
-  text-align: center;
-  padding: 20px;
+  background:black;
+  color:white;
+  text-align:center;
+  padding:20px;
 }
 
-.box {
-  background: #111;
-  padding: 20px;
-  border-radius: 15px;
-  max-width: 400px;
-  margin: auto;
+.box{
+  background:#111;
+  padding:20px;
+  border-radius:15px;
+  margin-top:20px;
 }
 
-canvas {
-  background: white;
-  margin-top: 20px;
+canvas{
+  background:white;
+  border-radius:10px;
+  margin-top:10px;
 }
 </style>
 </head>
@@ -34,121 +34,122 @@ canvas {
 
 <h2>📊 Material Analysis</h2>
 
-<div class="box" id="out"></div>
+<div id="result" class="box"></div>
 
+<div class="box">
+<h3>1. Stress vs Strength</h3>
 <canvas id="c1"></canvas>
+</div>
+
+<div class="box">
+<h3>2. Failure Curve</h3>
 <canvas id="c2"></canvas>
+</div>
+
+<div class="box">
+<h3>3. Factor of Safety</h3>
 <canvas id="c3"></canvas>
+</div>
+
+<p style="margin-top:30px;">~AVCOE, Roll no {69,70,71,72}</p>
 
 <script>
-
-// INPUT
 let url = new URLSearchParams(window.location.search);
+
 let f = parseFloat(url.get("f"));
 let a = parseFloat(url.get("a"));
 let t = parseFloat(url.get("t"));
 let app = url.get("app");
 
-// STRESS
 let stress = f/a;
 
-// MATERIAL DATABASE (REAL TYPE)
-let material, yieldStrength;
+// MATERIAL LOGIC (technical names)
+let material, strength;
 
 if(app=="Automotive"){
-  material="EN8 / 40C8 Steel"; yieldStrength=400;
+  material="EN8 (080M40)";
+  strength=465;
 }
 else if(app=="Aerospace"){
-  material="Ti-6Al-4V Titanium"; yieldStrength=900;
+  material="Ti-6Al-4V ELI";
+  strength=817;
 }
 else if(app=="Structural"){
-  material="Mild Steel (Fe250)"; yieldStrength=250;
+  material="Fe410 Structural Steel";
+  strength=250;
 }
 else if(app=="Marine"){
-  material="SS316 Stainless Steel"; yieldStrength=520;
+  material="SS316";
+  strength=290;
 }
 else if(app=="Biomedical"){
-  material="Ti-6Al-4V ELI"; yieldStrength=860;
+  material="Ti Grade 2";
+  strength=350;
 }
 else if(app=="Tooling"){
-  material="H13 Tool Steel"; yieldStrength=1000;
+  material="D2 Tool Steel";
+  strength=700;
 }
 else if(app=="Thermal"){
-  material="Aluminium 6061"; yieldStrength=275;
+  material="Copper Alloy";
+  strength=210;
 }
 else if(app=="Electrical"){
-  material="Copper Alloy"; yieldStrength=210;
+  material="Aluminium 6061";
+  strength=310;
 }
 else if(app=="Heavy Load"){
-  material="EN24 Alloy Steel"; yieldStrength=850;
+  material="EN24";
+  strength=850;
 }
 else{
-  material="Carbon Fiber Composite"; yieldStrength=600;
+  material="Aluminium 7075";
+  strength=500;
 }
 
-// TEMP EFFECT
-let tempFactor = 1 - (t/1000);
-let finalStrength = yieldStrength * tempFactor;
+let fos = (strength/stress).toFixed(2);
 
-// FOS
-let fos = (finalStrength/stress).toFixed(2);
-
-// OUTPUT
-document.getElementById("out").innerHTML = `
+// SHOW RESULT
+document.getElementById("result").innerHTML = `
 <b>Material:</b> ${material}<br>
-<b>Yield Strength:</b> ${finalStrength.toFixed(2)} MPa<br>
+<b>Yield Strength:</b> ${strength} MPa<br>
 <b>Applied Stress:</b> ${stress.toFixed(2)} MPa<br>
-<b>Factor of Safety:</b> ${fos}
+<b>FOS:</b> ${fos}
 `;
 
-// GRAPH 1 → Stress vs Strength
-new Chart(document.getElementById("c1"), {
-  type:'bar',
-  data:{
-    labels:['Stress','Yield Strength'],
-    datasets:[{
-      label:'Stress Comparison',
-      data:[stress, finalStrength]
-    }]
-  }
+// GRAPH 1
+new Chart(document.getElementById("c1"),{
+type:"bar",
+data:{
+labels:["Stress","Strength"],
+datasets:[{
+data:[stress,strength]
+}]
+}
 });
 
-// GRAPH 2 → Failure Line
-new Chart(document.getElementById("c2"), {
-  type:'line',
-  data:{
-    labels:['Start','Failure Point'],
-    datasets:[{
-      label:'Failure Curve',
-      data:[stress, finalStrength]
-    }]
-  }
+// GRAPH 2
+new Chart(document.getElementById("c2"),{
+type:"line",
+data:{
+labels:["Start","Failure"],
+datasets:[{
+data:[stress,strength]
+}]
+}
 });
 
-// GRAPH 3 → FOS Visualization
-new Chart(document.getElementById("c3"), {
-  type:'bar',
-  data:{
-    labels:['FOS'],
-    datasets:[{
-      label:'Safety',
-      data:[fos]
-    }]
-  }
+// GRAPH 3
+new Chart(document.getElementById("c3"),{
+type:"bar",
+data:{
+labels:["FOS"],
+datasets:[{
+data:[fos]
+}]
+}
 });
-
 </script>
-
-<footer style="
-  position: fixed;
-  bottom: 10px;
-  width: 100%;
-  text-align: center;
-  font-size: 13px;
-  color: gray;
-">
-  ~AVCOE, Roll no {69,70,71,72}
-</footer>
 
 </body>
 </html>
