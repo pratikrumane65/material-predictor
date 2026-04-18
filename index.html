@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Material Selection</title>
+<title>Material Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body {
@@ -10,106 +11,157 @@ body {
   font-family: Arial;
   text-align: center;
   padding: 20px;
-  margin: 0;
 }
 
 .card {
   background: #111;
-  padding: 20px;
+  padding: 25px;
   border-radius: 15px;
-  max-width: 400px;
-  margin: auto;
+  margin: 20px auto;
+  max-width: 420px;
 }
 
-input, button {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 10px;
-  border: none;
+.result-text {
+  font-size: 20px;
+  line-height: 1.8;
 }
 
-button {
+.label {
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.value {
+  font-size: 20px;
+}
+
+canvas {
   background: white;
-  cursor: pointer;
-}
-
-select {
-  width: 100%;
-  padding: 12px;
   border-radius: 10px;
-}
-
-/* ✅ FIXED FOOTER */
-.footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: black;
-  padding: 10px;
-  font-size: 14px;
+  margin-top: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>⚙️ Smart Material Selection & Analysis System</h1>
+<h1>📊 Material Analysis</h1>
+
+<div class="card result-text" id="resultBox"></div>
 
 <div class="card">
-
-<input id="force" placeholder="Force (N)">
-<input id="area" placeholder="Area (mm²)">
-<input id="temp" placeholder="Temperature (°C)">
-
-<select id="app">
-<option value="">Select Application</option>
-<option>Automotive</option>
-<option>Aerospace</option>
-<option>Structural</option>
-<option>Marine</option>
-<option>Biomedical</option>
-<option>Tooling</option>
-<option>Thermal</option>
-<option>Electrical</option>
-<option>Heavy Load</option>
-<option>Lightweight</option>
-</select>
-
-<button onclick="goNext()">Predict</button>
-
+<h2>1. Stress vs Yield Strength</h2>
+<canvas id="c1"></canvas>
 </div>
 
-<!-- ✅ ALWAYS VISIBLE FOOTER -->
-<div class="footer">
-~AVCOE, Roll no {69 70 71 72}
+<div class="card">
+<h2>2. Specific Strength</h2>
+<canvas id="c2"></canvas>
 </div>
+
+<div class="card">
+<h2>3. Strength vs Temperature</h2>
+<canvas id="c3"></canvas>
+</div>
+
+<div class="card">
+<h2>4. Safety Margin</h2>
+<canvas id="c4"></canvas>
+</div>
+
+<p style="margin-top:20px;">~AVCOE, Roll no {69 70 71 72}</p>
 
 <script>
-function goNext() {
 
-  let force = parseFloat(document.getElementById("force").value);
-  let area = parseFloat(document.getElementById("area").value);
-  let temp = parseFloat(document.getElementById("temp").value);
-  let app = document.getElementById("app").value;
-
-  if (!force || !area || !app) {
-    alert("Fill all fields");
-    return;
-  }
-
-  let data = {
-    force: force,
-    area: area,
-    temp: temp,
-    app: app
-  };
-
-  localStorage.setItem("data", JSON.stringify(data));
-
-  window.open("result.html", "_blank");
+// LOAD DATA
+let raw = localStorage.getItem("data");
+if (!raw) {
+  document.body.innerHTML = "<h2>No data found</h2>";
+  throw "error";
 }
+
+const data = JSON.parse(raw);
+
+let f = data.force;
+let a = data.area;
+let temp = data.temp || 25;
+let app = data.app;
+
+let stress = f / a;
+
+// UPDATED MATERIAL DATABASE (CATEGORY + GRADE)
+const matDB = {
+  "Automotive": {name:"Medium Carbon Steel (EN8)", strength:550, density:7850},
+  "Aerospace": {name:"Aluminium Alloy (7075-T6)", strength:500, density:2810},
+  "Structural": {name:"Plain Carbon Steel (40C8)", strength:380, density:7850},
+  "Marine": {name:"Stainless Steel (SS316)", strength:290, density:8000},
+  "Biomedical": {name:"Titanium Alloy (Ti-6Al-4V)", strength:817, density:4430},
+  "Tooling": {name:"Tool Steel (D2)", strength:700, density:7700},
+  "Thermal": {name:"Copper Alloy (C110)", strength:220, density:8960},
+  "Electrical": {name:"Aluminium Alloy (6061)", strength:310, density:2700},
+  "Heavy Load": {name:"Alloy Steel (EN24)", strength:850, density:7850},
+  "Lightweight": {name:"Magnesium Alloy (AZ31)", strength:260, density:1770}
+};
+
+let m = matDB[app];
+
+let strength = m.strength;
+let density = m.density;
+
+// TEMP EFFECT
+let strength_temp = strength * (1 - 0.002*(temp-25));
+
+// OUTPUT
+document.getElementById("resultBox").innerHTML = `
+<span class="label">Material:</span> <span class="value">${m.name}</span><br>
+
+<span class="label">Yield Strength:</span> <span class="value">${strength} MPa</span><br>
+
+<span class="label">Density:</span> <span class="value">${density} kg/m³</span><br>
+
+<span class="label">Applied Stress:</span> <span class="value">${stress.toFixed(2)} MPa</span><br>
+
+<span class="label">Temp Adjusted Strength:</span> <span class="value">${strength_temp.toFixed(2)} MPa</span>
+`;
+
+// GRAPH 1
+new Chart(c1, {
+  type: 'bar',
+  data: {
+    labels: ['Stress', 'Strength'],
+    datasets: [{ data: [stress, strength] }]
+  }
+});
+
+// GRAPH 2
+new Chart(c2, {
+  type: 'bar',
+  data: {
+    labels: ['Specific Strength'],
+    datasets: [{ data: [(strength/density)] }]
+  }
+});
+
+// GRAPH 3
+new Chart(c3, {
+  type: 'line',
+  data: {
+    labels: [25,100,200,300],
+    datasets: [{
+      data: [strength, strength*0.9, strength*0.8, strength*0.7]
+    }]
+  }
+});
+
+// GRAPH 4
+new Chart(c4, {
+  type: 'bar',
+  data: {
+    labels: ['Safety Margin'],
+    datasets: [{ data: [strength - stress] }]
+  }
+});
+
 </script>
 
 </body>
