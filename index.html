@@ -4,68 +4,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Material Predictor</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
 body {
   font-family: Arial;
   background: #000;
-  color: #fff;
+  color: white;
   text-align: center;
   padding: 20px;
 }
 
-/* 🔥 ANIMATION */
 .container {
   background: #111;
   padding: 20px;
   border-radius: 15px;
-  max-width: 350px;
+  max-width: 400px;
   margin: auto;
-  animation: fadeIn 1s ease;
-}
-
-@keyframes fadeIn {
-  from {opacity:0; transform: translateY(20px);}
-  to {opacity:1; transform: translateY(0);}
+  animation: fade 1s ease;
 }
 
 input, select {
-  width: 100%;
+  width: 90%;
   padding: 12px;
-  margin: 8px 0;
-  border-radius: 10px;
+  margin: 8px;
+  border-radius: 8px;
   border: none;
-  background: #222;
-  color: white;
 }
 
 button {
-  width: 100%;
+  width: 90%;
   padding: 12px;
-  background: #fff;
-  color: #000;
-  border-radius: 10px;
-  font-weight: bold;
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
   transition: 0.3s;
 }
 
 button:hover {
-  background: #ccc;
+  transform: scale(1.05);
 }
 
-.result {
-  margin-top: 20px;
-  padding: 15px;
-  background: #111;
-  border-radius: 10px;
-  animation: fadeIn 0.5s ease;
-}
-
-canvas {
-  margin-top: 20px;
-  background: white;
-  border-radius: 10px;
+@keyframes fade {
+  from {opacity:0; transform: translateY(20px);}
+  to {opacity:1; transform: translateY(0);}
 }
 </style>
 </head>
@@ -75,101 +57,31 @@ canvas {
 <h2>🤖 AI Material Predictor</h2>
 
 <div class="container">
+  <input id="force" placeholder="Force (N)">
+  <input id="area" placeholder="Area (mm²)">
+  <input id="temp" placeholder="Temperature (°C)">
 
-<input id="force" placeholder="Force (N)">
-<input id="area" placeholder="Area (mm²)">
-<input id="temp" placeholder="Temperature (°C)">
+  <select id="app">
+    <option>Automotive</option>
+    <option>Aerospace</option>
+    <option>Structural</option>
+  </select>
 
-<select id="app">
-<option>Automotive</option>
-<option>Aerospace</option>
-<option>Structural</option>
-</select>
-
-<button onclick="run()">Predict</button>
-
-<div id="output" class="result"></div>
-
-<canvas id="c1"></canvas>
-<canvas id="c2"></canvas>
-<canvas id="c3"></canvas>
-
+  <button onclick="go()">Predict</button>
 </div>
 
 <script>
+function go(){
+  let f = document.getElementById("force").value;
+  let a = document.getElementById("area").value;
+  let t = document.getElementById("temp").value;
+  let app = document.getElementById("app").value;
 
-let chart1, chart2, chart3;
-
-function run(){
-
-let f = parseFloat(document.getElementById("force").value);
-let a = parseFloat(document.getElementById("area").value);
-let t = parseFloat(document.getElementById("temp").value);
-let app = document.getElementById("app").value;
-
-if(isNaN(f) || isNaN(a)){
-  alert("Enter valid values");
-  return;
+  window.open(
+    `result.html?f=${f}&a=${a}&t=${t}&app=${app}`,
+    "_blank"
+  );
 }
-
-let stress = f/a;
-
-/* 🤖 SIMPLE ML MODEL (REGRESSION TYPE LOGIC)
-   strength ≈ w1*temp + w2*stress + bias
-*/
-
-let strength = (0.5 * t) + (2 * stress) + 200;
-let cost = (0.3 * strength) + 100;
-
-/* Material classification */
-let material = "Mild Steel";
-if(strength > 800) material = "Titanium Alloy";
-else if(strength > 400) material = "Aluminum Alloy";
-
-let fos = (strength/stress).toFixed(2);
-
-/* OUTPUT */
-document.getElementById("output").innerHTML = `
-<b>Material:</b> ${material}<br>
-<b>Predicted Strength:</b> ${strength.toFixed(2)}<br>
-<b>Stress:</b> ${stress.toFixed(2)}<br>
-<b>FOS:</b> ${fos}<br>
-<b>Estimated Cost:</b> ₹${cost.toFixed(0)}
-`;
-
-
-/* GRAPH 1 */
-if(chart1) chart1.destroy();
-chart1 = new Chart(document.getElementById("c1"), {
-  type: 'bar',
-  data: {
-    labels: ['Stress','Strength'],
-    datasets: [{data: [stress, strength]}]
-  }
-});
-
-/* GRAPH 2 */
-if(chart2) chart2.destroy();
-chart2 = new Chart(document.getElementById("c2"), {
-  type: 'line',
-  data: {
-    labels: ['Applied','Limit'],
-    datasets: [{data: [stress, strength]}]
-  }
-});
-
-/* GRAPH 3 */
-if(chart3) chart3.destroy();
-chart3 = new Chart(document.getElementById("c3"), {
-  type: 'pie',
-  data: {
-    labels: ['Material Cost','Extra'],
-    datasets: [{data: [cost, cost+300]}]
-  }
-});
-
-}
-
 </script>
 
 </body>
