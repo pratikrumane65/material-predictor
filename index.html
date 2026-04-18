@@ -2,25 +2,26 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Material Predictor</title>
+<title>Material Predictor</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body {
   font-family: Arial;
-  background: linear-gradient(135deg,#6a5acd,#836fff);
-  color: white;
+  background: #111;
+  color: #fff;
   text-align: center;
   padding: 20px;
 }
 
 .container {
-  background: rgba(255,255,255,0.1);
+  background: #1c1c1c;
   padding: 20px;
   border-radius: 15px;
   max-width: 350px;
   margin: auto;
+  box-shadow: 0 0 10px rgba(255,255,255,0.1);
 }
 
 input, select {
@@ -29,36 +30,30 @@ input, select {
   margin: 8px 0;
   border-radius: 10px;
   border: none;
+  background: #333;
+  color: white;
 }
 
 button {
   width: 100%;
   padding: 12px;
-  background: #2ecc71;
-  color: white;
+  background: #fff;
+  color: #000;
   border: none;
   border-radius: 10px;
   font-size: 16px;
+  font-weight: bold;
 }
 
-.result {
-  margin-top: 20px;
-  padding: 15px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.2);
-}
-
-canvas {
-  margin-top: 20px;
-  background: white;
-  border-radius: 10px;
+button:hover {
+  background: #ddd;
 }
 </style>
 </head>
 
 <body>
 
-<h2>🔧 Smart Material Predictor</h2>
+<h2>⚙ Smart Material Predictor</h2>
 
 <div class="container">
 
@@ -74,17 +69,9 @@ canvas {
 
 <button onclick="run()">Predict</button>
 
-<div id="output" class="result"></div>
-
-<canvas id="chart1"></canvas>
-<canvas id="chart2"></canvas>
-<canvas id="chart3"></canvas>
-
 </div>
 
 <script>
-
-let chart1, chart2, chart3;
 
 function run(){
 
@@ -92,11 +79,6 @@ let f = parseFloat(document.getElementById("force").value);
 let a = parseFloat(document.getElementById("area").value);
 let t = parseFloat(document.getElementById("temp").value);
 let app = document.getElementById("app").value;
-
-if(!f || !a){
-  alert("Enter valid values");
-  return;
-}
 
 let stress = f/a;
 
@@ -114,55 +96,85 @@ else{
 
 let fos = (strength/stress).toFixed(2);
 
-document.getElementById("output").innerHTML =
-"<b>Material:</b> "+material+
-"<br><b>Stress:</b> "+stress.toFixed(2)+
-"<br><b>FOS:</b> "+fos+
-"<br><b>Cost:</b> ₹"+cost;
 
+// 🔥 OPEN NEW PAGE
+let newPage = window.open("", "_blank");
 
-// GRAPH 1: Stress vs Strength
-if(chart1) chart1.destroy();
-chart1 = new Chart(document.getElementById("chart1"), {
-  type: 'bar',
-  data: {
-    labels: ['Stress','Strength'],
-    datasets: [{
-      label: 'Comparison',
-      data: [stress, strength]
-    }]
-  }
+newPage.document.write(`
+<html>
+<head>
+<title>Result</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  background:#000;
+  color:#fff;
+  font-family:Arial;
+  text-align:center;
+}
+.box {
+  background:#111;
+  margin:20px;
+  padding:20px;
+  border-radius:10px;
+}
+canvas {
+  background:#fff;
+  border-radius:10px;
+  margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Material Result</h2>
+
+<div class="box">
+Material: ${material}<br>
+Stress: ${stress.toFixed(2)}<br>
+FOS: ${fos}<br>
+Cost: ₹${cost}
+</div>
+
+<canvas id="c1"></canvas>
+<canvas id="c2"></canvas>
+<canvas id="c3"></canvas>
+
+<script>
+
+new Chart(document.getElementById("c1"), {
+type:'bar',
+data:{
+labels:['Stress','Strength'],
+datasets:[{data:[${stress},${strength}]}]
+}
 });
 
-
-// GRAPH 2: Failure Risk
-if(chart2) chart2.destroy();
-chart2 = new Chart(document.getElementById("chart2"), {
-  type: 'line',
-  data: {
-    labels: ['Applied Stress','Material Limit'],
-    datasets: [{
-      label: 'Failure Check',
-      data: [stress, strength]
-    }]
-  }
+new Chart(document.getElementById("c2"), {
+type:'line',
+data:{
+labels:['Applied','Limit'],
+datasets:[{data:[${stress},${strength}]}]
+}
 });
 
-
-// GRAPH 3: Cost Comparison
-if(chart3) chart3.destroy();
-chart3 = new Chart(document.getElementById("chart3"), {
-  type: 'pie',
-  data: {
-    labels: ['Selected','Alternative'],
-    datasets: [{
-      data: [cost, cost+500]
-    }]
-  }
+new Chart(document.getElementById("c3"), {
+type:'pie',
+data:{
+labels:['Selected','Alt'],
+datasets:[{data:[${cost},${cost+500}]}]
+}
 });
+
+<\/script>
+
+</body>
+</html>
+`);
 
 }
-
 </script>
 
 </body>
