@@ -1,72 +1,99 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Material System</title>
+<title>Material Selection</title>
 
 <style>
-body{font-family:Arial;background:black;color:white;text-align:center;padding:20px;}
-.container{background:#111;padding:20px;border-radius:15px;max-width:350px;margin:auto;}
-input{width:100%;padding:12px;margin:10px 0;border-radius:10px;border:none;}
-button{width:100%;padding:12px;background:#ccc;border:none;border-radius:10px;font-size:16px;margin-top:15px;}
-#selectedBox{padding:12px;background:#000;border-radius:10px;cursor:pointer;}
-#appList{display:none;position:fixed;bottom:0;left:0;width:100%;max-height:60%;background:#000;overflow-y:auto;border-radius:20px 20px 0 0;padding:20px;}
-.item{padding:15px;border-bottom:1px solid #333;font-size:18px;}
-.footer{margin-top:25px;font-size:14px;color:#aaa;}
+body {
+  background: black;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+  padding: 20px;
+}
+
+.card {
+  background: #111;
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 400px;
+  margin: auto;
+}
+
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+}
+
+button {
+  background: white;
+  cursor: pointer;
+}
+
+select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+}
 </style>
 </head>
 
 <body>
 
-<h2>⚙️ Smart Material Selection & Analysis System</h2>
+<h1>⚙️ Smart Material Selection & Analysis System</h1>
 
-<div class="container">
+<div class="card">
+
 <input id="force" placeholder="Force (N)">
 <input id="area" placeholder="Area (mm²)">
 <input id="temp" placeholder="Temperature (°C)">
 
-<label>Select Application</label>
-<div id="selectedBox" onclick="openList()">Select Application ▼</div>
+<select id="app">
+<option value="">Select Application</option>
+<option>Automotive</option>
+<option>Aerospace</option>
+<option>Structural</option>
+<option>Marine</option>
+<option>Biomedical</option>
+<option>Tooling</option>
+<option>Thermal</option>
+<option>Electrical</option>
+<option>Heavy Load</option>
+<option>Lightweight</option>
+</select>
 
-<button onclick="go()">Predict</button>
+<button onclick="goNext()">Predict</button>
+
 </div>
 
-<div class="footer">~AVCOE, Roll no {69,70,71,72}</div>
-
-<div id="appList">
-<div onclick="selectApp('Automotive')" class="item">Automotive</div>
-<div onclick="selectApp('Aerospace')" class="item">Aerospace</div>
-<div onclick="selectApp('Structural')" class="item">Structural</div>
-<div onclick="selectApp('Marine')" class="item">Marine</div>
-<div onclick="selectApp('Biomedical')" class="item">Biomedical</div>
-<div onclick="selectApp('Tooling')" class="item">Tooling</div>
-<div onclick="selectApp('Thermal')" class="item">Thermal</div>
-<div onclick="selectApp('Electrical')" class="item">Electrical</div>
-<div onclick="selectApp('Heavy Load')" class="item">Heavy Load</div>
-<div onclick="selectApp('Lightweight')" class="item">Lightweight</div>
-</div>
+<p style="margin-top:20px;">~AVCOE, Roll no {69 70 71 72}</p>
 
 <script>
-let selectedApp="";
+function goNext() {
 
-function openList(){
-document.getElementById("appList").style.display="block";
-}
+  let force = parseFloat(document.getElementById("force").value);
+  let area = parseFloat(document.getElementById("area").value);
+  let temp = parseFloat(document.getElementById("temp").value);
+  let app = document.getElementById("app").value;
 
-function selectApp(val){
-selectedApp=val;
-document.getElementById("selectedBox").innerHTML=val+" ▼";
-document.getElementById("appList").style.display="none";
-}
+  if (!force || !area || !app) {
+    alert("Fill all fields");
+    return;
+  }
 
-function go(){
-let f=document.getElementById("force").value;
-let a=document.getElementById("area").value;
-let t=document.getElementById("temp").value;
+  let data = {
+    force: force,
+    area: area,
+    temp: temp,
+    app: app
+  };
 
-if(!selectedApp){alert("Select application");return;}
+  localStorage.setItem("data", JSON.stringify(data));
 
-window.location.href=`result.html?f=${f}&a=${a}&t=${t}&app=${selectedApp}`;
+  window.open("result.html", "_blank");
 }
 </script>
 
