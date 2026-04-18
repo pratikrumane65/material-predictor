@@ -8,9 +8,9 @@
 
 <style>
 body {
-  font-family: Arial;
   background: black;
   color: white;
+  font-family: Arial;
   text-align: center;
   padding: 20px;
 }
@@ -19,13 +19,12 @@ body {
   background: #111;
   padding: 20px;
   border-radius: 15px;
-  margin: 15px auto;
   max-width: 400px;
+  margin: auto;
 }
 
 canvas {
   background: white;
-  border-radius: 10px;
   margin-top: 20px;
 }
 </style>
@@ -33,9 +32,9 @@ canvas {
 
 <body>
 
-<h2>📊 Material Result</h2>
+<h2>📊 Material Analysis</h2>
 
-<div class="box" id="output"></div>
+<div class="box" id="out"></div>
 
 <canvas id="c1"></canvas>
 <canvas id="c2"></canvas>
@@ -43,100 +42,97 @@ canvas {
 
 <script>
 
-// GET DATA
+// INPUT
 let url = new URLSearchParams(window.location.search);
-
 let f = parseFloat(url.get("f"));
 let a = parseFloat(url.get("a"));
 let t = parseFloat(url.get("t"));
-let app = url.get("app").split(",");
+let app = url.get("app");
 
-// CALCULATE STRESS
-let stress = f / a;
+// STRESS
+let stress = f/a;
 
-// MATERIAL LOGIC
-let material = "";
-let baseStrength = 0;
-let baseCost = 0;
+// MATERIAL DATABASE (REAL TYPE)
+let material, yieldStrength;
 
-if(app.includes("Aerospace")){
-  material = "Titanium Alloy";
-  baseStrength = 900;
-  baseCost = 1500;
+if(app=="Automotive"){
+  material="EN8 / 40C8 Steel"; yieldStrength=400;
 }
-else if(app.includes("Automotive")){
-  material = "Aluminium Alloy";
-  baseStrength = 320;
-  baseCost = 800;
+else if(app=="Aerospace"){
+  material="Ti-6Al-4V Titanium"; yieldStrength=900;
 }
-else if(app.includes("Structural")){
-  material = "Mild Steel";
-  baseStrength = 250;
-  baseCost = 400;
+else if(app=="Structural"){
+  material="Mild Steel (Fe250)"; yieldStrength=250;
 }
-else if(app.includes("Marine")){
-  material = "Stainless Steel";
-  baseStrength = 500;
-  baseCost = 900;
+else if(app=="Marine"){
+  material="SS316 Stainless Steel"; yieldStrength=520;
+}
+else if(app=="Biomedical"){
+  material="Ti-6Al-4V ELI"; yieldStrength=860;
+}
+else if(app=="Tooling"){
+  material="H13 Tool Steel"; yieldStrength=1000;
+}
+else if(app=="Thermal"){
+  material="Aluminium 6061"; yieldStrength=275;
+}
+else if(app=="Electrical"){
+  material="Copper Alloy"; yieldStrength=210;
+}
+else if(app=="Heavy Load"){
+  material="EN24 Alloy Steel"; yieldStrength=850;
 }
 else{
-  material = "Composite Material";
-  baseStrength = 700;
-  baseCost = 1200;
+  material="Carbon Fiber Composite"; yieldStrength=600;
 }
 
-// AI EFFECT
-let tempFactor = 1 - (t / 1000);
-let stressFactor = 1 - (stress / 1000);
-
-let strength = baseStrength * tempFactor * stressFactor;
+// TEMP EFFECT
+let tempFactor = 1 - (t/1000);
+let finalStrength = yieldStrength * tempFactor;
 
 // FOS
-let fos = (strength / stress).toFixed(2);
-
-// COST
-let cost = baseCost + (t * 2) + (stress * 5);
+let fos = (finalStrength/stress).toFixed(2);
 
 // OUTPUT
-document.getElementById("output").innerHTML = `
+document.getElementById("out").innerHTML = `
 <b>Material:</b> ${material}<br>
-<b>Strength:</b> ${strength.toFixed(2)}<br>
-<b>Stress:</b> ${stress.toFixed(2)}<br>
-<b>FOS:</b> ${fos}<br>
-<b>Estimated Cost:</b> ₹${Math.round(cost)}
+<b>Yield Strength:</b> ${finalStrength.toFixed(2)} MPa<br>
+<b>Applied Stress:</b> ${stress.toFixed(2)} MPa<br>
+<b>Factor of Safety:</b> ${fos}
 `;
 
-// GRAPH 1
+// GRAPH 1 → Stress vs Strength
 new Chart(document.getElementById("c1"), {
   type:'bar',
   data:{
-    labels:['Stress','Strength'],
+    labels:['Stress','Yield Strength'],
     datasets:[{
-      label:'Comparison',
-      data:[stress,strength]
+      label:'Stress Comparison',
+      data:[stress, finalStrength]
     }]
   }
 });
 
-// GRAPH 2
+// GRAPH 2 → Failure Line
 new Chart(document.getElementById("c2"), {
   type:'line',
   data:{
-    labels:['Applied','Limit'],
+    labels:['Start','Failure Point'],
     datasets:[{
-      label:'Failure Check',
-      data:[stress,strength]
+      label:'Failure Curve',
+      data:[stress, finalStrength]
     }]
   }
 });
 
-// GRAPH 3
+// GRAPH 3 → FOS Visualization
 new Chart(document.getElementById("c3"), {
-  type:'pie',
+  type:'bar',
   data:{
-    labels:['Material Cost','Extra'],
+    labels:['FOS'],
     datasets:[{
-      data:[cost, 3000-cost]
+      label:'Safety',
+      data:[fos]
     }]
   }
 });
