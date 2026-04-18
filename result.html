@@ -13,7 +13,6 @@ body {
   padding: 20px;
 }
 
-/* RESULT CARD */
 .card {
   background: #111;
   padding: 25px;
@@ -22,13 +21,11 @@ body {
   max-width: 420px;
 }
 
-/* BIG TEXT */
 .result-text {
   font-size: 20px;
   line-height: 1.8;
 }
 
-/* LABEL BOLD */
 .label {
   font-weight: bold;
   font-size: 22px;
@@ -38,7 +35,6 @@ body {
   font-size: 20px;
 }
 
-/* GRAPH */
 canvas {
   background: white;
   border-radius: 10px;
@@ -93,18 +89,18 @@ let app = data.app;
 
 let stress = f / a;
 
-// MATERIAL DB
+// UPDATED MATERIAL DATABASE (CATEGORY + GRADE)
 const matDB = {
-  "Automotive": {name:"EN8 Steel", strength:550, density:7850},
-  "Aerospace": {name:"Aluminium 7075-T6", strength:500, density:2810},
-  "Structural": {name:"Plain Carbon Steel 40C8", strength:380, density:7850},
-  "Marine": {name:"Stainless Steel 316", strength:290, density:8000},
-  "Biomedical": {name:"Ti-6Al-4V", strength:817, density:4430},
-  "Tooling": {name:"D2 Tool Steel", strength:700, density:7700},
-  "Thermal": {name:"Copper Alloy C110", strength:220, density:8960},
-  "Electrical": {name:"Aluminium 6061", strength:310, density:2700},
-  "Heavy Load": {name:"EN24 Alloy Steel", strength:850, density:7850},
-  "Lightweight": {name:"Magnesium AZ31", strength:260, density:1770}
+  "Automotive": {name:"Medium Carbon Steel (EN8)", strength:550, density:7850},
+  "Aerospace": {name:"Aluminium Alloy (7075-T6)", strength:500, density:2810},
+  "Structural": {name:"Plain Carbon Steel (40C8)", strength:380, density:7850},
+  "Marine": {name:"Stainless Steel (SS316)", strength:290, density:8000},
+  "Biomedical": {name:"Titanium Alloy (Ti-6Al-4V)", strength:817, density:4430},
+  "Tooling": {name:"Tool Steel (D2)", strength:700, density:7700},
+  "Thermal": {name:"Copper Alloy (C110)", strength:220, density:8960},
+  "Electrical": {name:"Aluminium Alloy (6061)", strength:310, density:2700},
+  "Heavy Load": {name:"Alloy Steel (EN24)", strength:850, density:7850},
+  "Lightweight": {name:"Magnesium Alloy (AZ31)", strength:260, density:1770}
 };
 
 let m = matDB[app];
@@ -112,9 +108,10 @@ let m = matDB[app];
 let strength = m.strength;
 let density = m.density;
 
+// TEMP EFFECT
 let strength_temp = strength * (1 - 0.002*(temp-25));
 
-// OUTPUT (BOLD + BIG)
+// OUTPUT
 document.getElementById("resultBox").innerHTML = `
 <span class="label">Material:</span> <span class="value">${m.name}</span><br>
 
@@ -141,9 +138,7 @@ new Chart(c2, {
   type: 'bar',
   data: {
     labels: ['Specific Strength'],
-    datasets: [{
-      data: [(strength/density)]
-    }]
+    datasets: [{ data: [(strength/density)] }]
   }
 });
 
@@ -163,9 +158,7 @@ new Chart(c4, {
   type: 'bar',
   data: {
     labels: ['Safety Margin'],
-    datasets: [{
-      data: [strength - stress]
-    }]
+    datasets: [{ data: [strength - stress] }]
   }
 });
 
