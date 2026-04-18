@@ -1,123 +1,151 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Result</title>
+<title>Material Analysis</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{font-family:Arial;background:black;color:white;text-align:center;padding:20px;}
-.box{background:#111;padding:20px;border-radius:15px;margin-top:20px;}
-canvas{background:white;border-radius:10px;margin-top:10px;}
-.footer{margin-top:30px;color:#aaa;}
+body {
+  font-family: Arial;
+  background: black;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.card {
+  background: #111;
+  padding: 20px;
+  border-radius: 15px;
+  margin: 20px auto;
+  max-width: 400px;
+}
+
+canvas {
+  background: white;
+  border-radius: 10px;
+  margin-top: 20px;
+}
 </style>
 </head>
 
 <body>
 
-<h2>📊 Material Analysis</h2>
+<h1>📊 Material Analysis</h1>
 
-<div id="result" class="box"></div>
+<div class="card" id="resultBox"></div>
 
-<div class="box">
-<h3>1. Stress vs Yield Strength</h3>
-<canvas id="c1"></canvas>
+<div class="card">
+<h2>1. Stress vs Yield Strength</h2>
+<canvas id="chart1"></canvas>
 </div>
 
-<div class="box">
-<h3>2. Safety Evaluation (FOS)</h3>
-<canvas id="c2"></canvas>
+<div class="card">
+<h2>2. Safety Evaluation (FOS)</h2>
+<canvas id="chart2"></canvas>
 </div>
 
-<div class="box">
-<h3>3. Stress Line Behaviour</h3>
-<canvas id="c3"></canvas>
-</div>
-
-<div class="footer">~AVCOE, Roll no {69,70,71,72}</div>
+<p style="margin-top:30px;">~AVCOE, Roll no {69 70 71 72}</p>
 
 <script>
-let url=new URLSearchParams(window.location.search);
+const data = JSON.parse(localStorage.getItem("data"));
 
-let f=parseFloat(url.get("f"));
-let a=parseFloat(url.get("a"));
-let t=parseFloat(url.get("t"));
-let app=url.get("app");
+let f = data.force;
+let a = data.area;
+let app = data.app;
 
-let stress=f/a; // σ = F/A
+let stress = f / a;
 
-let material,strength,reason;
+// ✅ Specific materials
+let material, strength, reason;
 
-// LOGIC
-if(app=="Heavy Load"){
-material="EN24";
-strength=850;
-reason="High strength required for heavy load.";
+if(app=="Automotive"){
+  material = "EN8 Steel";
+  strength = 550;
+  reason = "Good strength & machinability";
 }
 else if(app=="Aerospace"){
-material="Ti-6Al-4V";
-strength=817;
-reason="Lightweight + high strength.";
+  material = "Aluminium 7075-T6";
+  strength = 500;
+  reason = "High strength, lightweight";
+}
+else if(app=="Structural"){
+  material = "40C8 Carbon Steel";
+  strength = 380;
+  reason = "Strong & economical";
 }
 else if(app=="Marine"){
-material="SS316";
-strength=290;
-reason="Corrosion resistance required.";
+  material = "Stainless Steel 316";
+  strength = 290;
+  reason = "Corrosion resistance";
 }
-else if(app=="Automotive"){
-material="EN8";
-strength=465;
-reason="Balanced strength & cost.";
+else if(app=="Biomedical"){
+  material = "Ti-6Al-4V ELI";
+  strength = 817;
+  reason = "Biocompatible";
 }
-else{
-material="Al 7075";
-strength=500;
-reason="Lightweight application.";
+else if(app=="Tooling"){
+  material = "D2 Tool Steel";
+  strength = 700;
+  reason = "Wear resistant";
+}
+else if(app=="Thermal"){
+  material = "Copper Alloy C110";
+  strength = 220;
+  reason = "High conductivity";
+}
+else if(app=="Electrical"){
+  material = "Aluminium 6061";
+  strength = 310;
+  reason = "Good conductor";
+}
+else if(app=="Heavy Load"){
+  material = "EN24 Alloy Steel";
+  strength = 850;
+  reason = "High load capacity";
+}
+else if(app=="Lightweight"){
+  material = "Magnesium AZ31";
+  strength = 260;
+  reason = "Ultra lightweight";
 }
 
-// TEMPERATURE EFFECT
-if(t>200){
-strength*=0.8;
-reason+=" High temperature reduces strength.";
-}
+// calculations
+let fos = (strength / stress).toFixed(2);
+let status = fos > 2 ? "✅ Safe" : "❌ Not Safe";
 
-let fos=(strength/stress).toFixed(2);
-
-// SAFETY STATUS
-let status="";
-if(fos<1) status="❌ Failure";
-else if(fos<2) status="⚠ Risk";
-else status="✅ Safe";
-
-document.getElementById("result").innerHTML=`
-<b>Formula:</b> σ = F/A<br><br>
-<b>Material:</b> ${material}<br>
-<b>Yield Strength:</b> ${strength.toFixed(2)} MPa<br>
-<b>Applied Stress:</b> ${stress.toFixed(2)} MPa<br>
-<b>FOS:</b> ${fos}<br>
-<b>Status:</b> ${status}<br><br>
-<b>Reason:</b> ${reason}
+// ❌ Removed formula line here
+document.getElementById("resultBox").innerHTML = `
+Material: ${material}<br>
+Yield Strength: ${strength.toFixed(2)} MPa<br>
+Applied Stress: ${stress.toFixed(2)} MPa<br>
+FOS: ${fos}<br>
+Status: ${status}<br><br>
+Reason: ${reason}
 `;
 
-// GRAPH 1
-new Chart(document.getElementById("c1"),{
-type:"bar",
-data:{labels:["Stress","Strength"],
-datasets:[{data:[stress,strength]}]}
+// Chart 1
+new Chart(document.getElementById("chart1"), {
+  type: 'bar',
+  data: {
+    labels: ['Stress', 'Yield Strength'],
+    datasets: [{
+      label: 'MPa',
+      data: [stress, strength]
+    }]
+  }
 });
 
-// GRAPH 2
-new Chart(document.getElementById("c2"),{
-type:"bar",
-data:{labels:["FOS"],
-datasets:[{data:[fos]}]}
-});
-
-// GRAPH 3
-new Chart(document.getElementById("c3"),{
-type:"line",
-data:{labels:["Start","Failure"],
-datasets:[{data:[stress,strength]}]}
+// Chart 2
+new Chart(document.getElementById("chart2"), {
+  type: 'bar',
+  data: {
+    labels: ['FOS'],
+    datasets: [{
+      label: 'Safety',
+      data: [fos]
+    }]
+  }
 });
 </script>
 
