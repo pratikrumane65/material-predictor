@@ -29,30 +29,6 @@ input{
   border:none;
 }
 
-/* RADIO STYLE */
-.opt{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin:10px 0;
-  font-size:16px;
-}
-
-.opt input{
-  transform:scale(1.2);
-}
-
-/* SCROLL BOX */
-.scroll-box{
-  text-align:left;
-  max-height:220px;
-  overflow-y:auto;
-  padding:10px;
-  border-radius:10px;
-  background:#000;
-}
-
-/* BUTTON */
 button{
   width:100%;
   padding:12px;
@@ -61,6 +37,36 @@ button{
   border-radius:10px;
   font-size:16px;
   margin-top:15px;
+}
+
+#selectedBox{
+  padding:12px;
+  background:#000;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+#appList{
+  display:none;
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  max-height:60%;
+  background:#000;
+  overflow-y:auto;
+  border-radius:20px 20px 0 0;
+  padding:20px;
+}
+
+.item{
+  padding:15px;
+  border-bottom:1px solid #333;
+  font-size:18px;
+}
+
+.item:hover{
+  background:#222;
 }
 </style>
 </head>
@@ -77,43 +83,55 @@ button{
 
 <label style="margin-top:10px;display:block;">Select Application</label>
 
-<div class="scroll-box">
-
-<label class="opt"><input type="radio" name="app" value="Automotive"> Automotive</label>
-<label class="opt"><input type="radio" name="app" value="Aerospace"> Aerospace</label>
-<label class="opt"><input type="radio" name="app" value="Structural"> Structural</label>
-<label class="opt"><input type="radio" name="app" value="Marine"> Marine</label>
-<label class="opt"><input type="radio" name="app" value="Biomedical"> Biomedical</label>
-<label class="opt"><input type="radio" name="app" value="Tooling"> Tooling</label>
-<label class="opt"><input type="radio" name="app" value="Thermal"> Thermal</label>
-<label class="opt"><input type="radio" name="app" value="Electrical"> Electrical</label>
-<label class="opt"><input type="radio" name="app" value="Heavy Load"> Heavy Load</label>
-<label class="opt"><input type="radio" name="app" value="Lightweight"> Lightweight</label>
-
+<div id="selectedBox" onclick="openList()">
+  Select Application ▼
 </div>
 
 <button onclick="go()">Predict</button>
 
 </div>
 
-<script>
-function go(){
+<!-- POPUP LIST -->
+<div id="appList">
 
+<div onclick="selectApp('Automotive')" class="item">Automotive</div>
+<div onclick="selectApp('Aerospace')" class="item">Aerospace</div>
+<div onclick="selectApp('Structural')" class="item">Structural</div>
+<div onclick="selectApp('Marine')" class="item">Marine</div>
+<div onclick="selectApp('Biomedical')" class="item">Biomedical</div>
+<div onclick="selectApp('Tooling')" class="item">Tooling</div>
+<div onclick="selectApp('Thermal')" class="item">Thermal</div>
+<div onclick="selectApp('Electrical')" class="item">Electrical</div>
+<div onclick="selectApp('Heavy Load')" class="item">Heavy Load</div>
+<div onclick="selectApp('Lightweight')" class="item">Lightweight</div>
+
+</div>
+
+<script>
+let selectedApp = "";
+
+function openList(){
+  document.getElementById("appList").style.display = "block";
+}
+
+function selectApp(val){
+  selectedApp = val;
+  document.getElementById("selectedBox").innerHTML = val + " ▼";
+  document.getElementById("appList").style.display = "none";
+}
+
+function go(){
   let f = document.getElementById("force").value;
   let a = document.getElementById("area").value;
   let t = document.getElementById("temp").value;
 
-  let selected = document.querySelector('input[name="app"]:checked');
-
-  if(!selected){
-    alert("Please select application");
+  if(!selectedApp){
+    alert("Select application");
     return;
   }
 
-  let app = selected.value;
-
   window.location.href =
-    "result.html?f="+f+"&a="+a+"&t="+t+"&app="+app;
+    "result.html?f="+f+"&a="+a+"&t="+t+"&app="+selectedApp;
 }
 </script>
 
