@@ -10,6 +10,7 @@ body {
   font-family: Arial;
   text-align: center;
   padding: 20px;
+  margin: 0;
 }
 
 .card {
@@ -37,6 +38,17 @@ select {
   width: 100%;
   padding: 12px;
   border-radius: 10px;
+}
+
+/* ✅ FIXED FOOTER */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: black;
+  padding: 10px;
+  font-size: 14px;
 }
 </style>
 </head>
@@ -69,7 +81,10 @@ select {
 
 </div>
 
-<p style="margin-top:20px;">~AVCOE, Roll no {69 70 71 72}</p>
+<!-- ✅ ALWAYS VISIBLE FOOTER -->
+<div class="footer">
+~AVCOE, Roll no {69 70 71 72}
+</div>
 
 <script>
 function goNext() {
