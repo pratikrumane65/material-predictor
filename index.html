@@ -1,167 +1,127 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Material Analysis</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Smart Material Selection & Analysis System</title>
 
 <style>
 body {
-  background: black;
-  color: white;
+  margin: 0;
   font-family: Arial;
+  color: white;
   text-align: center;
+
+  /* BACKGROUND IMAGE */
+  background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)),
+  url('https://images.unsplash.com/photo-1581091215367-59ab6b4a3a85');
+
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* MAIN CARD */
+.container {
+  background: rgba(0,0,0,0.75);
   padding: 20px;
-}
-
-.card {
-  background: #111;
-  padding: 25px;
   border-radius: 15px;
-  margin: 20px auto;
   max-width: 420px;
+  margin: 60px auto;
+  backdrop-filter: blur(10px);
 }
 
-.result-text {
-  font-size: 20px;
-  line-height: 1.8;
-}
-
-.label {
-  font-weight: bold;
-  font-size: 22px;
-}
-
-.value {
-  font-size: 20px;
-}
-
-canvas {
-  background: white;
+/* INPUTS */
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
   border-radius: 10px;
-  margin-top: 10px;
+  border: none;
+  font-size: 15px;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* FOOTER */
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  color: #aaa;
+  background: rgba(0,0,0,0.8);
 }
 </style>
 </head>
 
 <body>
 
-<h1>📊 Material Analysis</h1>
+<h1>⚙️ Smart Material Selection & Analysis System</h1>
 
-<div class="card result-text" id="resultBox"></div>
+<div class="container">
 
-<div class="card">
-<h2>1. Stress vs Yield Strength</h2>
-<canvas id="c1"></canvas>
+<input id="force" placeholder="Force (N)">
+<input id="area" placeholder="Area (mm²)">
+<input id="temp" placeholder="Temperature (°C)">
+
+<select id="app">
+  <option value="">Select Application</option>
+  <option>Automotive</option>
+  <option>Aerospace</option>
+  <option>Structural</option>
+  <option>Marine</option>
+  <option>Biomedical</option>
+  <option>Tooling</option>
+  <option>Thermal</option>
+  <option>Electrical</option>
+  <option>Heavy Load</option>
+  <option>Lightweight</option>
+</select>
+
+<button onclick="run()">Predict</button>
+
 </div>
 
-<div class="card">
-<h2>2. Specific Strength</h2>
-<canvas id="c2"></canvas>
+<div class="footer">
+~AVCOE, Roll no {69 70 71 72}
 </div>
-
-<div class="card">
-<h2>3. Strength vs Temperature</h2>
-<canvas id="c3"></canvas>
-</div>
-
-<div class="card">
-<h2>4. Safety Margin</h2>
-<canvas id="c4"></canvas>
-</div>
-
-<p style="margin-top:20px;">~AVCOE, Roll no {69 70 71 72}</p>
 
 <script>
+function run(){
 
-// LOAD DATA
-let raw = localStorage.getItem("data");
-if (!raw) {
-  document.body.innerHTML = "<h2>No data found</h2>";
-  throw "error";
+let f = document.getElementById("force").value;
+let a = document.getElementById("area").value;
+let t = document.getElementById("temp").value;
+let app = document.getElementById("app").value;
+
+if(!f || !a || !app){
+  alert("Enter all values");
+  return;
 }
 
-const data = JSON.parse(raw);
+/* STORE DATA */
+localStorage.setItem("data", JSON.stringify({
+  force: f,
+  area: a,
+  temp: t,
+  app: app
+}));
 
-let f = data.force;
-let a = data.area;
-let temp = data.temp || 25;
-let app = data.app;
+/* OPEN RESULT PAGE */
+window.open("result.html","_blank");
 
-let stress = f / a;
-
-// UPDATED MATERIAL DATABASE (CATEGORY + GRADE)
-const matDB = {
-  "Automotive": {name:"Medium Carbon Steel (EN8)", strength:550, density:7850},
-  "Aerospace": {name:"Aluminium Alloy (7075-T6)", strength:500, density:2810},
-  "Structural": {name:"Plain Carbon Steel (40C8)", strength:380, density:7850},
-  "Marine": {name:"Stainless Steel (SS316)", strength:290, density:8000},
-  "Biomedical": {name:"Titanium Alloy (Ti-6Al-4V)", strength:817, density:4430},
-  "Tooling": {name:"Tool Steel (D2)", strength:700, density:7700},
-  "Thermal": {name:"Copper Alloy (C110)", strength:220, density:8960},
-  "Electrical": {name:"Aluminium Alloy (6061)", strength:310, density:2700},
-  "Heavy Load": {name:"Alloy Steel (EN24)", strength:850, density:7850},
-  "Lightweight": {name:"Magnesium Alloy (AZ31)", strength:260, density:1770}
-};
-
-let m = matDB[app];
-
-let strength = m.strength;
-let density = m.density;
-
-// TEMP EFFECT
-let strength_temp = strength * (1 - 0.002*(temp-25));
-
-// OUTPUT
-document.getElementById("resultBox").innerHTML = `
-<span class="label">Material:</span> <span class="value">${m.name}</span><br>
-
-<span class="label">Yield Strength:</span> <span class="value">${strength} MPa</span><br>
-
-<span class="label">Density:</span> <span class="value">${density} kg/m³</span><br>
-
-<span class="label">Applied Stress:</span> <span class="value">${stress.toFixed(2)} MPa</span><br>
-
-<span class="label">Temp Adjusted Strength:</span> <span class="value">${strength_temp.toFixed(2)} MPa</span>
-`;
-
-// GRAPH 1
-new Chart(c1, {
-  type: 'bar',
-  data: {
-    labels: ['Stress', 'Strength'],
-    datasets: [{ data: [stress, strength] }]
-  }
-});
-
-// GRAPH 2
-new Chart(c2, {
-  type: 'bar',
-  data: {
-    labels: ['Specific Strength'],
-    datasets: [{ data: [(strength/density)] }]
-  }
-});
-
-// GRAPH 3
-new Chart(c3, {
-  type: 'line',
-  data: {
-    labels: [25,100,200,300],
-    datasets: [{
-      data: [strength, strength*0.9, strength*0.8, strength*0.7]
-    }]
-  }
-});
-
-// GRAPH 4
-new Chart(c4, {
-  type: 'bar',
-  data: {
-    labels: ['Safety Margin'],
-    datasets: [{ data: [strength - stress] }]
-  }
-});
-
+}
 </script>
 
 </body>
