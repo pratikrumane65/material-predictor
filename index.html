@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Material Predictor</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: linear-gradient(135deg,#6a5acd,#836fff);
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.container {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 350px;
+    margin: auto;
+    backdrop-filter: blur(10px);
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 10px;
+    border: none;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.result {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.2);
+}
+</style>
+</head>
+
+<body>
+
+<h2>🔧 Smart Material Predictor</h2>
+
+<div class="container">
+
+<input id="force" placeholder="Force (N)">
+<input id="area" placeholder="Area (mm²)">
+<input id="temp" placeholder="Temperature (°C)">
+
+<select id="app">
+<option>Automotive</option>
+<option>Aerospace</option>
+<option>Structural</option>
+</select>
+
+<button onclick="run()">Predict</button>
+
+<div id="output" class="result"></div>
+
+</div>
+
+<script>
+function run(){
+
+let f = parseFloat(document.getElementById("force").value);
+let a = parseFloat(document.getElementById("area").value);
+let t = parseFloat(document.getElementById("temp").value);
+let app = document.getElementById("app").value;
+
+let stress = f/a;
+
+let material="", strength=0, cost=0;
+
+if(app==="Aerospace" || t>300){
+material="Titanium Alloy"; strength=900; cost=1500;
+}
+else if(app==="Automotive"){
+material="Aluminum Alloy"; strength=300; cost=800;
+}
+else{
+material="Mild Steel"; strength=250; cost=400;
+}
+
+let fos = (strength/stress).toFixed(2);
+
+document.getElementById("output").innerHTML =
+"<b>Material:</b> "+material+
+"<br><b>FOS:</b> "+fos+
+"<br><b>Cost:</b> ₹"+cost;
+
+}
+</script>
+
+</body>
+</html>
