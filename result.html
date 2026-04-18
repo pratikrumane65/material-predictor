@@ -18,12 +18,13 @@ body {
   padding: 20px;
   border-radius: 15px;
   margin: 20px auto;
-  max-width: 400px;
+  max-width: 420px;
 }
 
 canvas {
   background: white;
   border-radius: 10px;
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -39,13 +40,32 @@ canvas {
 <canvas id="chart1"></canvas>
 </div>
 
+<div class="card">
+<h2>2. Strength Comparison</h2>
+<canvas id="chart2"></canvas>
+</div>
+
+<div class="card">
+<h2>3. Density vs Strength</h2>
+<canvas id="chart3"></canvas>
+</div>
+
+<div class="card">
+<h2>4. Temperature Effect</h2>
+<canvas id="chart4"></canvas>
+</div>
+
+<div class="card">
+<h2>5. Safety Margin</h2>
+<canvas id="chart5"></canvas>
+</div>
+
 <p>~AVCOE, Roll no {69 70 71 72}</p>
 
 <script>
 
-// SAFE LOAD
+// LOAD DATA
 let raw = localStorage.getItem("data");
-
 if (!raw) {
   document.body.innerHTML = "<h2>No data found</h2>";
   throw new Error("No data");
@@ -55,84 +75,102 @@ const data = JSON.parse(raw);
 
 let f = data.force;
 let a = data.area;
+let temp = data.temp || 25;
 let app = data.app;
 
 let stress = f / a;
 
-// ✅ REAL MATERIAL GRADES
-let material, strength, reason;
+// MATERIAL DATABASE
+const materials = {
+  "Automotive": {name:"EN8 Steel", strength:550, density:7850},
+  "Aerospace": {name:"Al 7075-T6", strength:500, density:2810},
+  "Structural": {name:"40C8 Steel", strength:380, density:7850},
+  "Marine": {name:"SS 316", strength:290, density:8000},
+  "Biomedical": {name:"Ti-6Al-4V", strength:817, density:4430},
+  "Tooling": {name:"D2 Steel", strength:700, density:7700},
+  "Thermal": {name:"Copper C110", strength:220, density:8960},
+  "Electrical": {name:"Al 6061", strength:310, density:2700},
+  "Heavy Load": {name:"EN24 Steel", strength:850, density:7850},
+  "Lightweight": {name:"Mg AZ31", strength:260, density:1770}
+};
 
-if(app=="Automotive"){
-  material="EN8 Medium Carbon Steel";
-  strength=550;
-  reason="Used in shafts & gears";
-}
-else if(app=="Aerospace"){
-  material="Aluminium 7075-T6";
-  strength=500;
-  reason="High strength lightweight alloy";
-}
-else if(app=="Structural"){
-  material="Plain Carbon Steel 40C8";
-  strength=380;
-  reason="Common structural steel";
-}
-else if(app=="Marine"){
-  material="Stainless Steel 316";
-  strength=290;
-  reason="Corrosion resistant";
-}
-else if(app=="Biomedical"){
-  material="Titanium Ti-6Al-4V ELI";
-  strength=817;
-  reason="Biocompatible implant material";
-}
-else if(app=="Tooling"){
-  material="D2 Tool Steel";
-  strength=700;
-  reason="High wear resistance";
-}
-else if(app=="Thermal"){
-  material="Copper Alloy C110 (Electrolytic Tough Pitch)";
-  strength=220;
-  reason="Excellent thermal conductivity";
-}
-else if(app=="Electrical"){
-  material="Aluminium 6061-T6";
-  strength=310;
-  reason="Good electrical conductivity";
-}
-else if(app=="Heavy Load"){
-  material="EN24 Alloy Steel";
-  strength=850;
-  reason="High strength under heavy load";
-}
-else if(app=="Lightweight"){
-  material="Magnesium AZ31 Alloy";
-  strength=260;
-  reason="Ultra lightweight";
-}
+let mat = materials[app];
 
-// calculation
-let status = (strength / stress) > 2 ? "✅ Safe" : "❌ Not Safe";
+let strength = mat.strength;
+let density = mat.density;
 
-// OUTPUT (❌ FOS REMOVED)
+// Temperature effect (simple model)
+let strength_temp = strength * (1 - 0.002*(temp-25));
+
+// OUTPUT
 document.getElementById("resultBox").innerHTML = `
-Material: ${material}<br>
+Material: ${mat.name}<br>
 Yield Strength: ${strength} MPa<br>
+Density: ${density} kg/m³<br>
 Applied Stress: ${stress.toFixed(2)} MPa<br>
-Status: ${status}<br><br>
-Reason: ${reason}
+Temperature Adjusted Strength: ${strength_temp.toFixed(2)} MPa
 `;
 
-// GRAPH
-new Chart(document.getElementById("chart1"), {
+// 1️⃣ Stress vs Strength
+new Chart(chart1, {
   type: 'bar',
   data: {
-    labels: ['Applied Stress', 'Yield Strength'],
+    labels: ['Stress', 'Strength'],
+    datasets: [{ data: [stress, strength] }]
+  }
+});
+
+// 2️⃣ Strength comparison
+new Chart(chart2, {
+  type: 'bar',
+  data: {
+    labels: Object.values(materials).map(m=>m.name),
     datasets: [{
-      label: 'MPa',
-      data: [stress, strength]
+      label: "MPa",
+      data: Object.values(materials).map(m=>m.strength)
+    }]
+  }
+});
+
+// 3️⃣ Density vs Strength
+new Chart(chart3, {
+  type: 'scatter',
+  data: {
+    datasets: [{
+      label: "Materials",
+      data: Object.values(materials).map(m=>({
+        x: m.density,
+        y: m.strength
+      }))
+    }]
+  },
+  options: {
+    scales: {
+      x: { title: { display:true, text:"Density"} },
+      y: { title: { display:true, text:"Strength"} }
+    }
+  }
+});
+
+// 4️⃣ Temperature effect
+new Chart(chart4, {
+  type: 'line',
+  data: {
+    labels: [25,100,200,300],
+    datasets: [{
+      label:"Strength",
+      data: [strength, strength*0.9, strength*0.8, strength*0.7]
+    }]
+  }
+});
+
+// 5️⃣ Safety margin
+new Chart(chart5, {
+  type: 'bar',
+  data: {
+    labels: ['Margin'],
+    datasets: [{
+      data: [strength - stress]
     }]
   }
 });
