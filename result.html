@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Result</title>
+<title>AI Result</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -39,7 +39,7 @@ canvas {
 
 <body>
 
-<h2>📊 Material Result</h2>
+<h2>🤖 AI Material Analysis</h2>
 
 <div class="box" id="output"></div>
 
@@ -48,36 +48,58 @@ canvas {
 <canvas id="c3"></canvas>
 
 <script>
-// GET DATA
+// GET INPUT
 let url = new URLSearchParams(window.location.search);
 let f = parseFloat(url.get("f"));
 let a = parseFloat(url.get("a"));
 let t = parseFloat(url.get("t"));
 let app = url.get("app");
 
-// CALCULATIONS
-let stress = f/a;
+// STRESS
+let stress = f / a;
 
-let material="", strength=0, cost=0;
+// 🔥 AI-LIKE MODEL (dynamic logic)
+let baseStrength, material, baseCost;
 
+// Application based base values
 if(app=="Aerospace"){
-  material="Titanium Alloy"; strength=900; cost=1500;
+  baseStrength = 850;
+  material = "Titanium Alloy";
+  baseCost = 1500;
 }
 else if(app=="Automotive"){
-  material="Aluminium Alloy"; strength=300; cost=800;
+  baseStrength = 320;
+  material = "Aluminium Alloy";
+  baseCost = 800;
 }
 else{
-  material="Mild Steel"; strength=250; cost=400;
+  baseStrength = 260;
+  material = "Mild Steel";
+  baseCost = 400;
 }
 
-let fos = (strength/stress).toFixed(2);
+// Temperature effect (AI behavior)
+let tempFactor = 1 - (t / 1000);   // high temp → reduce strength
+
+// Stress effect (AI behavior)
+let stressFactor = 1 - (stress / 1000);
+
+// FINAL PREDICTED STRENGTH
+let predictedStrength = baseStrength * tempFactor * stressFactor;
+
+// COST ESTIMATION (AI style)
+let cost = baseCost + (t * 2) + (stress * 5);
+
+// FOS
+let fos = (predictedStrength / stress).toFixed(2);
 
 // OUTPUT
 document.getElementById("output").innerHTML = `
 <b>Material:</b> ${material}<br>
+<b>Predicted Strength:</b> ${predictedStrength.toFixed(2)}<br>
 <b>Stress:</b> ${stress.toFixed(2)}<br>
 <b>FOS:</b> ${fos}<br>
-<b>Estimated Cost:</b> ₹${cost}
+<b>Estimated Cost:</b> ₹${Math.round(cost)}
 `;
 
 // GRAPH 1
@@ -86,8 +108,8 @@ new Chart(document.getElementById("c1"), {
   data:{
     labels:['Stress','Strength'],
     datasets:[{
-      label:'Material Data',
-      data:[stress,strength]
+      label:'Comparison',
+      data:[stress,predictedStrength]
     }]
   },
   options:{animation:{duration:1500}}
@@ -99,8 +121,8 @@ new Chart(document.getElementById("c2"), {
   data:{
     labels:['Applied','Limit'],
     datasets:[{
-      label:'Failure Check',
-      data:[stress,strength]
+      label:'Failure Risk',
+      data:[stress,predictedStrength]
     }]
   },
   options:{animation:{duration:1500}}
@@ -112,7 +134,7 @@ new Chart(document.getElementById("c3"), {
   data:{
     labels:['Material Cost','Extra'],
     datasets:[{
-      data:[cost, 2000-cost]
+      data:[cost, 3000-cost]
     }]
   },
   options:{animation:{duration:1500}}
