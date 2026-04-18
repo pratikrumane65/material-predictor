@@ -13,14 +13,32 @@ body {
   padding: 20px;
 }
 
+/* RESULT CARD */
 .card {
   background: #111;
-  padding: 20px;
+  padding: 25px;
   border-radius: 15px;
   margin: 20px auto;
   max-width: 420px;
 }
 
+/* BIG TEXT */
+.result-text {
+  font-size: 20px;
+  line-height: 1.8;
+}
+
+/* LABEL BOLD */
+.label {
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.value {
+  font-size: 20px;
+}
+
+/* GRAPH */
 canvas {
   background: white;
   border-radius: 10px;
@@ -33,7 +51,7 @@ canvas {
 
 <h1>📊 Material Analysis</h1>
 
-<div class="card" id="resultBox"></div>
+<div class="card result-text" id="resultBox"></div>
 
 <div class="card">
 <h2>1. Stress vs Yield Strength</h2>
@@ -41,7 +59,7 @@ canvas {
 </div>
 
 <div class="card">
-<h2>2. Specific Strength (Strength/Density)</h2>
+<h2>2. Specific Strength</h2>
 <canvas id="c2"></canvas>
 </div>
 
@@ -55,7 +73,7 @@ canvas {
 <canvas id="c4"></canvas>
 </div>
 
-<p>~AVCOE, Roll no {69 70 71 72}</p>
+<p style="margin-top:20px;">~AVCOE, Roll no {69 70 71 72}</p>
 
 <script>
 
@@ -75,18 +93,18 @@ let app = data.app;
 
 let stress = f / a;
 
-// MATERIAL DB (REALISTIC)
+// MATERIAL DB
 const matDB = {
   "Automotive": {name:"EN8 Steel", strength:550, density:7850},
-  "Aerospace": {name:"Al 7075-T6", strength:500, density:2810},
-  "Structural": {name:"40C8 Steel", strength:380, density:7850},
-  "Marine": {name:"SS 316", strength:290, density:8000},
+  "Aerospace": {name:"Aluminium 7075-T6", strength:500, density:2810},
+  "Structural": {name:"Plain Carbon Steel 40C8", strength:380, density:7850},
+  "Marine": {name:"Stainless Steel 316", strength:290, density:8000},
   "Biomedical": {name:"Ti-6Al-4V", strength:817, density:4430},
-  "Tooling": {name:"D2 Steel", strength:700, density:7700},
-  "Thermal": {name:"Copper C110", strength:220, density:8960},
-  "Electrical": {name:"Al 6061", strength:310, density:2700},
-  "Heavy Load": {name:"EN24 Steel", strength:850, density:7850},
-  "Lightweight": {name:"Mg AZ31", strength:260, density:1770}
+  "Tooling": {name:"D2 Tool Steel", strength:700, density:7700},
+  "Thermal": {name:"Copper Alloy C110", strength:220, density:8960},
+  "Electrical": {name:"Aluminium 6061", strength:310, density:2700},
+  "Heavy Load": {name:"EN24 Alloy Steel", strength:850, density:7850},
+  "Lightweight": {name:"Magnesium AZ31", strength:260, density:1770}
 };
 
 let m = matDB[app];
@@ -94,19 +112,22 @@ let m = matDB[app];
 let strength = m.strength;
 let density = m.density;
 
-// temp effect (simple engineering assumption)
 let strength_temp = strength * (1 - 0.002*(temp-25));
 
-// OUTPUT
+// OUTPUT (BOLD + BIG)
 document.getElementById("resultBox").innerHTML = `
-Material: ${m.name}<br>
-Yield Strength: ${strength} MPa<br>
-Density: ${density} kg/m³<br>
-Applied Stress: ${stress.toFixed(2)} MPa<br>
-Temp Adjusted Strength: ${strength_temp.toFixed(2)} MPa
+<span class="label">Material:</span> <span class="value">${m.name}</span><br>
+
+<span class="label">Yield Strength:</span> <span class="value">${strength} MPa</span><br>
+
+<span class="label">Density:</span> <span class="value">${density} kg/m³</span><br>
+
+<span class="label">Applied Stress:</span> <span class="value">${stress.toFixed(2)} MPa</span><br>
+
+<span class="label">Temp Adjusted Strength:</span> <span class="value">${strength_temp.toFixed(2)} MPa</span>
 `;
 
-// 1️⃣ Stress vs Strength
+// GRAPH 1
 new Chart(c1, {
   type: 'bar',
   data: {
@@ -115,40 +136,33 @@ new Chart(c1, {
   }
 });
 
-// 2️⃣ Specific strength
+// GRAPH 2
 new Chart(c2, {
   type: 'bar',
   data: {
-    labels: ['Selected Material'],
+    labels: ['Specific Strength'],
     datasets: [{
-      label: "Strength/Density",
       data: [(strength/density)]
     }]
   }
 });
 
-// 3️⃣ Strength vs temperature
+// GRAPH 3
 new Chart(c3, {
   type: 'line',
   data: {
     labels: [25,100,200,300],
     datasets: [{
-      label: "Strength",
-      data: [
-        strength,
-        strength*0.9,
-        strength*0.8,
-        strength*0.7
-      ]
+      data: [strength, strength*0.9, strength*0.8, strength*0.7]
     }]
   }
 });
 
-// 4️⃣ Safety margin
+// GRAPH 4
 new Chart(c4, {
   type: 'bar',
   data: {
-    labels: ['Margin'],
+    labels: ['Safety Margin'],
     datasets: [{
       data: [strength - stress]
     }]
