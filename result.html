@@ -37,27 +37,22 @@ canvas {
 
 <div class="card">
 <h2>1. Stress vs Yield Strength</h2>
-<canvas id="chart1"></canvas>
+<canvas id="c1"></canvas>
 </div>
 
 <div class="card">
-<h2>2. Strength Comparison</h2>
-<canvas id="chart2"></canvas>
+<h2>2. Specific Strength (Strength/Density)</h2>
+<canvas id="c2"></canvas>
 </div>
 
 <div class="card">
-<h2>3. Density vs Strength</h2>
-<canvas id="chart3"></canvas>
+<h2>3. Strength vs Temperature</h2>
+<canvas id="c3"></canvas>
 </div>
 
 <div class="card">
-<h2>4. Temperature Effect</h2>
-<canvas id="chart4"></canvas>
-</div>
-
-<div class="card">
-<h2>5. Safety Margin</h2>
-<canvas id="chart5"></canvas>
+<h2>4. Safety Margin</h2>
+<canvas id="c4"></canvas>
 </div>
 
 <p>~AVCOE, Roll no {69 70 71 72}</p>
@@ -68,7 +63,7 @@ canvas {
 let raw = localStorage.getItem("data");
 if (!raw) {
   document.body.innerHTML = "<h2>No data found</h2>";
-  throw new Error("No data");
+  throw "error";
 }
 
 const data = JSON.parse(raw);
@@ -80,8 +75,8 @@ let app = data.app;
 
 let stress = f / a;
 
-// MATERIAL DATABASE
-const materials = {
+// MATERIAL DB (REALISTIC)
+const matDB = {
   "Automotive": {name:"EN8 Steel", strength:550, density:7850},
   "Aerospace": {name:"Al 7075-T6", strength:500, density:2810},
   "Structural": {name:"40C8 Steel", strength:380, density:7850},
@@ -94,25 +89,25 @@ const materials = {
   "Lightweight": {name:"Mg AZ31", strength:260, density:1770}
 };
 
-let mat = materials[app];
+let m = matDB[app];
 
-let strength = mat.strength;
-let density = mat.density;
+let strength = m.strength;
+let density = m.density;
 
-// Temperature effect (simple model)
+// temp effect (simple engineering assumption)
 let strength_temp = strength * (1 - 0.002*(temp-25));
 
 // OUTPUT
 document.getElementById("resultBox").innerHTML = `
-Material: ${mat.name}<br>
+Material: ${m.name}<br>
 Yield Strength: ${strength} MPa<br>
 Density: ${density} kg/m³<br>
 Applied Stress: ${stress.toFixed(2)} MPa<br>
-Temperature Adjusted Strength: ${strength_temp.toFixed(2)} MPa
+Temp Adjusted Strength: ${strength_temp.toFixed(2)} MPa
 `;
 
 // 1️⃣ Stress vs Strength
-new Chart(chart1, {
+new Chart(c1, {
   type: 'bar',
   data: {
     labels: ['Stress', 'Strength'],
@@ -120,52 +115,37 @@ new Chart(chart1, {
   }
 });
 
-// 2️⃣ Strength comparison
-new Chart(chart2, {
+// 2️⃣ Specific strength
+new Chart(c2, {
   type: 'bar',
   data: {
-    labels: Object.values(materials).map(m=>m.name),
+    labels: ['Selected Material'],
     datasets: [{
-      label: "MPa",
-      data: Object.values(materials).map(m=>m.strength)
+      label: "Strength/Density",
+      data: [(strength/density)]
     }]
   }
 });
 
-// 3️⃣ Density vs Strength
-new Chart(chart3, {
-  type: 'scatter',
-  data: {
-    datasets: [{
-      label: "Materials",
-      data: Object.values(materials).map(m=>({
-        x: m.density,
-        y: m.strength
-      }))
-    }]
-  },
-  options: {
-    scales: {
-      x: { title: { display:true, text:"Density"} },
-      y: { title: { display:true, text:"Strength"} }
-    }
-  }
-});
-
-// 4️⃣ Temperature effect
-new Chart(chart4, {
+// 3️⃣ Strength vs temperature
+new Chart(c3, {
   type: 'line',
   data: {
     labels: [25,100,200,300],
     datasets: [{
-      label:"Strength",
-      data: [strength, strength*0.9, strength*0.8, strength*0.7]
+      label: "Strength",
+      data: [
+        strength,
+        strength*0.9,
+        strength*0.8,
+        strength*0.7
+      ]
     }]
   }
 });
 
-// 5️⃣ Safety margin
-new Chart(chart5, {
+// 4️⃣ Safety margin
+new Chart(c4, {
   type: 'bar',
   data: {
     labels: ['Margin'],
