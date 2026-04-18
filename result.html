@@ -6,9 +6,9 @@
 
 <style>
 body {
-  font-family: Arial;
   background: black;
   color: white;
+  font-family: Arial;
   text-align: center;
   padding: 20px;
 }
@@ -24,7 +24,6 @@ body {
 canvas {
   background: white;
   border-radius: 10px;
-  margin-top: 20px;
 }
 </style>
 </head>
@@ -45,10 +44,19 @@ canvas {
 <canvas id="chart2"></canvas>
 </div>
 
-<p style="margin-top:30px;">~AVCOE, Roll no {69 70 71 72}</p>
+<p>~AVCOE, Roll no {69 70 71 72}</p>
 
 <script>
-const data = JSON.parse(localStorage.getItem("data"));
+
+// 🔒 SAFE LOAD
+let raw = localStorage.getItem("data");
+
+if (!raw) {
+  document.body.innerHTML = "<h2>No data found. Go back.</h2>";
+  throw new Error("No data");
+}
+
+const data = JSON.parse(raw);
 
 let f = data.force;
 let a = data.area;
@@ -56,79 +64,59 @@ let app = data.app;
 
 let stress = f / a;
 
-// ✅ Specific materials
+// ✅ SPECIFIC MATERIALS
 let material, strength, reason;
 
 if(app=="Automotive"){
-  material = "EN8 Steel";
-  strength = 550;
-  reason = "Good strength & machinability";
+  material="EN8 Steel"; strength=550; reason="Automotive shafts";
 }
 else if(app=="Aerospace"){
-  material = "Aluminium 7075-T6";
-  strength = 500;
-  reason = "High strength, lightweight";
+  material="Aluminium 7075-T6"; strength=500; reason="Lightweight";
 }
 else if(app=="Structural"){
-  material = "40C8 Carbon Steel";
-  strength = 380;
-  reason = "Strong & economical";
+  material="40C8 Steel"; strength=380; reason="General structure";
 }
 else if(app=="Marine"){
-  material = "Stainless Steel 316";
-  strength = 290;
-  reason = "Corrosion resistance";
+  material="SS 316"; strength=290; reason="Corrosion resistant";
 }
 else if(app=="Biomedical"){
-  material = "Ti-6Al-4V ELI";
-  strength = 817;
-  reason = "Biocompatible";
+  material="Ti-6Al-4V"; strength=817; reason="Biocompatible";
 }
 else if(app=="Tooling"){
-  material = "D2 Tool Steel";
-  strength = 700;
-  reason = "Wear resistant";
+  material="D2 Tool Steel"; strength=700; reason="Wear resistant";
 }
 else if(app=="Thermal"){
-  material = "Copper Alloy C110";
-  strength = 220;
-  reason = "High conductivity";
+  material="Copper Alloy"; strength=220; reason="Heat transfer";
 }
 else if(app=="Electrical"){
-  material = "Aluminium 6061";
-  strength = 310;
-  reason = "Good conductor";
+  material="Al 6061"; strength=310; reason="Conductivity";
 }
 else if(app=="Heavy Load"){
-  material = "EN24 Alloy Steel";
-  strength = 850;
-  reason = "High load capacity";
+  material="EN24 Steel"; strength=850; reason="Heavy load";
 }
 else if(app=="Lightweight"){
-  material = "Magnesium AZ31";
-  strength = 260;
-  reason = "Ultra lightweight";
+  material="Magnesium AZ31"; strength=260; reason="Very light";
 }
 
-// calculations
+// calc
 let fos = (strength / stress).toFixed(2);
 let status = fos > 2 ? "✅ Safe" : "❌ Not Safe";
 
-// ❌ Removed formula line here
+// OUTPUT
 document.getElementById("resultBox").innerHTML = `
 Material: ${material}<br>
-Yield Strength: ${strength.toFixed(2)} MPa<br>
+Yield Strength: ${strength} MPa<br>
 Applied Stress: ${stress.toFixed(2)} MPa<br>
 FOS: ${fos}<br>
 Status: ${status}<br><br>
 Reason: ${reason}
 `;
 
-// Chart 1
+// GRAPH 1
 new Chart(document.getElementById("chart1"), {
   type: 'bar',
   data: {
-    labels: ['Stress', 'Yield Strength'],
+    labels: ['Stress', 'Yield'],
     datasets: [{
       label: 'MPa',
       data: [stress, strength]
@@ -136,7 +124,7 @@ new Chart(document.getElementById("chart1"), {
   }
 });
 
-// Chart 2
+// GRAPH 2
 new Chart(document.getElementById("chart2"), {
   type: 'bar',
   data: {
@@ -147,6 +135,7 @@ new Chart(document.getElementById("chart2"), {
     }]
   }
 });
+
 </script>
 
 </body>
