@@ -2,31 +2,14 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Material Result</title>
-
+<title>Result</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{
-  font-family: Arial;
-  background:black;
-  color:white;
-  text-align:center;
-  padding:20px;
-}
-
-.box{
-  background:#111;
-  padding:20px;
-  border-radius:15px;
-  margin-top:20px;
-}
-
-canvas{
-  background:white;
-  border-radius:10px;
-  margin-top:10px;
-}
+body{font-family:Arial;background:black;color:white;text-align:center;padding:20px;}
+.box{background:#111;padding:20px;border-radius:15px;margin-top:20px;}
+canvas{background:white;border-radius:10px;margin-top:10px;}
+.footer{margin-top:30px;color:#aaa;}
 </style>
 </head>
 
@@ -37,117 +20,104 @@ canvas{
 <div id="result" class="box"></div>
 
 <div class="box">
-<h3>1. Stress vs Strength</h3>
+<h3>1. Stress vs Yield Strength</h3>
 <canvas id="c1"></canvas>
 </div>
 
 <div class="box">
-<h3>2. Failure Curve</h3>
+<h3>2. Safety Evaluation (FOS)</h3>
 <canvas id="c2"></canvas>
 </div>
 
 <div class="box">
-<h3>3. Factor of Safety</h3>
+<h3>3. Stress Line Behaviour</h3>
 <canvas id="c3"></canvas>
 </div>
 
-<p style="margin-top:30px;">~AVCOE, Roll no {69,70,71,72}</p>
+<div class="footer">~AVCOE, Roll no {69,70,71,72}</div>
 
 <script>
-let url = new URLSearchParams(window.location.search);
+let url=new URLSearchParams(window.location.search);
 
-let f = parseFloat(url.get("f"));
-let a = parseFloat(url.get("a"));
-let t = parseFloat(url.get("t"));
-let app = url.get("app");
+let f=parseFloat(url.get("f"));
+let a=parseFloat(url.get("a"));
+let t=parseFloat(url.get("t"));
+let app=url.get("app");
 
-let stress = f/a;
+let stress=f/a; // σ = F/A
 
-// MATERIAL LOGIC (technical names)
-let material, strength;
+let material,strength,reason;
 
-if(app=="Automotive"){
-  material="EN8 (080M40)";
-  strength=465;
+// LOGIC
+if(app=="Heavy Load"){
+material="EN24";
+strength=850;
+reason="High strength required for heavy load.";
 }
 else if(app=="Aerospace"){
-  material="Ti-6Al-4V ELI";
-  strength=817;
-}
-else if(app=="Structural"){
-  material="Fe410 Structural Steel";
-  strength=250;
+material="Ti-6Al-4V";
+strength=817;
+reason="Lightweight + high strength.";
 }
 else if(app=="Marine"){
-  material="SS316";
-  strength=290;
+material="SS316";
+strength=290;
+reason="Corrosion resistance required.";
 }
-else if(app=="Biomedical"){
-  material="Ti Grade 2";
-  strength=350;
-}
-else if(app=="Tooling"){
-  material="D2 Tool Steel";
-  strength=700;
-}
-else if(app=="Thermal"){
-  material="Copper Alloy";
-  strength=210;
-}
-else if(app=="Electrical"){
-  material="Aluminium 6061";
-  strength=310;
-}
-else if(app=="Heavy Load"){
-  material="EN24";
-  strength=850;
+else if(app=="Automotive"){
+material="EN8";
+strength=465;
+reason="Balanced strength & cost.";
 }
 else{
-  material="Aluminium 7075";
-  strength=500;
+material="Al 7075";
+strength=500;
+reason="Lightweight application.";
 }
 
-let fos = (strength/stress).toFixed(2);
+// TEMPERATURE EFFECT
+if(t>200){
+strength*=0.8;
+reason+=" High temperature reduces strength.";
+}
 
-// SHOW RESULT
-document.getElementById("result").innerHTML = `
+let fos=(strength/stress).toFixed(2);
+
+// SAFETY STATUS
+let status="";
+if(fos<1) status="❌ Failure";
+else if(fos<2) status="⚠ Risk";
+else status="✅ Safe";
+
+document.getElementById("result").innerHTML=`
+<b>Formula:</b> σ = F/A<br><br>
 <b>Material:</b> ${material}<br>
-<b>Yield Strength:</b> ${strength} MPa<br>
+<b>Yield Strength:</b> ${strength.toFixed(2)} MPa<br>
 <b>Applied Stress:</b> ${stress.toFixed(2)} MPa<br>
-<b>FOS:</b> ${fos}
+<b>FOS:</b> ${fos}<br>
+<b>Status:</b> ${status}<br><br>
+<b>Reason:</b> ${reason}
 `;
 
 // GRAPH 1
 new Chart(document.getElementById("c1"),{
 type:"bar",
-data:{
-labels:["Stress","Strength"],
-datasets:[{
-data:[stress,strength]
-}]
-}
+data:{labels:["Stress","Strength"],
+datasets:[{data:[stress,strength]}]}
 });
 
 // GRAPH 2
 new Chart(document.getElementById("c2"),{
-type:"line",
-data:{
-labels:["Start","Failure"],
-datasets:[{
-data:[stress,strength]
-}]
-}
+type:"bar",
+data:{labels:["FOS"],
+datasets:[{data:[fos]}]}
 });
 
 // GRAPH 3
 new Chart(document.getElementById("c3"),{
-type:"bar",
-data:{
-labels:["FOS"],
-datasets:[{
-data:[fos]
-}]
-}
+type:"line",
+data:{labels:["Start","Failure"],
+datasets:[{data:[stress,strength]}]}
 });
 </script>
 
