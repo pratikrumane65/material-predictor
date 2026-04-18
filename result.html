@@ -39,20 +39,15 @@ canvas {
 <canvas id="chart1"></canvas>
 </div>
 
-<div class="card">
-<h2>2. Safety Evaluation (FOS)</h2>
-<canvas id="chart2"></canvas>
-</div>
-
 <p>~AVCOE, Roll no {69 70 71 72}</p>
 
 <script>
 
-// 🔒 SAFE LOAD
+// SAFE LOAD
 let raw = localStorage.getItem("data");
 
 if (!raw) {
-  document.body.innerHTML = "<h2>No data found. Go back.</h2>";
+  document.body.innerHTML = "<h2>No data found</h2>";
   throw new Error("No data");
 }
 
@@ -64,74 +59,80 @@ let app = data.app;
 
 let stress = f / a;
 
-// ✅ SPECIFIC MATERIALS
+// ✅ REAL MATERIAL GRADES
 let material, strength, reason;
 
 if(app=="Automotive"){
-  material="EN8 Steel"; strength=550; reason="Automotive shafts";
+  material="EN8 Medium Carbon Steel";
+  strength=550;
+  reason="Used in shafts & gears";
 }
 else if(app=="Aerospace"){
-  material="Aluminium 7075-T6"; strength=500; reason="Lightweight";
+  material="Aluminium 7075-T6";
+  strength=500;
+  reason="High strength lightweight alloy";
 }
 else if(app=="Structural"){
-  material="40C8 Steel"; strength=380; reason="General structure";
+  material="Plain Carbon Steel 40C8";
+  strength=380;
+  reason="Common structural steel";
 }
 else if(app=="Marine"){
-  material="SS 316"; strength=290; reason="Corrosion resistant";
+  material="Stainless Steel 316";
+  strength=290;
+  reason="Corrosion resistant";
 }
 else if(app=="Biomedical"){
-  material="Ti-6Al-4V"; strength=817; reason="Biocompatible";
+  material="Titanium Ti-6Al-4V ELI";
+  strength=817;
+  reason="Biocompatible implant material";
 }
 else if(app=="Tooling"){
-  material="D2 Tool Steel"; strength=700; reason="Wear resistant";
+  material="D2 Tool Steel";
+  strength=700;
+  reason="High wear resistance";
 }
 else if(app=="Thermal"){
-  material="Copper Alloy"; strength=220; reason="Heat transfer";
+  material="Copper Alloy C110 (Electrolytic Tough Pitch)";
+  strength=220;
+  reason="Excellent thermal conductivity";
 }
 else if(app=="Electrical"){
-  material="Al 6061"; strength=310; reason="Conductivity";
+  material="Aluminium 6061-T6";
+  strength=310;
+  reason="Good electrical conductivity";
 }
 else if(app=="Heavy Load"){
-  material="EN24 Steel"; strength=850; reason="Heavy load";
+  material="EN24 Alloy Steel";
+  strength=850;
+  reason="High strength under heavy load";
 }
 else if(app=="Lightweight"){
-  material="Magnesium AZ31"; strength=260; reason="Very light";
+  material="Magnesium AZ31 Alloy";
+  strength=260;
+  reason="Ultra lightweight";
 }
 
-// calc
-let fos = (strength / stress).toFixed(2);
-let status = fos > 2 ? "✅ Safe" : "❌ Not Safe";
+// calculation
+let status = (strength / stress) > 2 ? "✅ Safe" : "❌ Not Safe";
 
-// OUTPUT
+// OUTPUT (❌ FOS REMOVED)
 document.getElementById("resultBox").innerHTML = `
 Material: ${material}<br>
 Yield Strength: ${strength} MPa<br>
 Applied Stress: ${stress.toFixed(2)} MPa<br>
-FOS: ${fos}<br>
 Status: ${status}<br><br>
 Reason: ${reason}
 `;
 
-// GRAPH 1
+// GRAPH
 new Chart(document.getElementById("chart1"), {
   type: 'bar',
   data: {
-    labels: ['Stress', 'Yield'],
+    labels: ['Applied Stress', 'Yield Strength'],
     datasets: [{
       label: 'MPa',
       data: [stress, strength]
-    }]
-  }
-});
-
-// GRAPH 2
-new Chart(document.getElementById("chart2"), {
-  type: 'bar',
-  data: {
-    labels: ['FOS'],
-    datasets: [{
-      label: 'Safety',
-      data: [fos]
     }]
   }
 });
