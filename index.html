@@ -6,9 +6,9 @@
 
 <style>
 body {
-  font-family: Arial;
   background: black;
   color: white;
+  font-family: Arial;
   text-align: center;
   padding: 20px;
 }
@@ -36,14 +36,13 @@ button {
   color: black;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
 }
 
+/* Radio style */
 .app-box {
   text-align: left;
   margin: 10px;
 }
-
 .app-box label {
   display: block;
   margin: 5px;
@@ -62,11 +61,16 @@ button {
 <input id="temp" placeholder="Temperature (°C)">
 
 <div class="app-box">
-  <label><input type="checkbox" value="Automotive"> Automotive</label>
-  <label><input type="checkbox" value="Aerospace"> Aerospace</label>
-  <label><input type="checkbox" value="Structural"> Structural</label>
-  <label><input type="checkbox" value="Marine"> Marine</label>
-  <label><input type="checkbox" value="Biomedical"> Biomedical</label>
+<label><input type="radio" name="app" value="Automotive"> Automotive</label>
+<label><input type="radio" name="app" value="Aerospace"> Aerospace</label>
+<label><input type="radio" name="app" value="Structural"> Structural</label>
+<label><input type="radio" name="app" value="Marine"> Marine</label>
+<label><input type="radio" name="app" value="Biomedical"> Biomedical</label>
+<label><input type="radio" name="app" value="Tooling"> Tooling</label>
+<label><input type="radio" name="app" value="Thermal"> Thermal</label>
+<label><input type="radio" name="app" value="Electrical"> Electrical</label>
+<label><input type="radio" name="app" value="Heavy Load"> Heavy Load</label>
+<label><input type="radio" name="app" value="Lightweight"> Lightweight</label>
 </div>
 
 <button onclick="go()">Predict</button>
@@ -76,26 +80,21 @@ button {
 <script>
 function go(){
 
-  let f = document.getElementById("force").value;
-  let a = document.getElementById("area").value;
-  let t = document.getElementById("temp").value;
+let f = document.getElementById("force").value;
+let a = document.getElementById("area").value;
+let t = document.getElementById("temp").value;
 
-  let selected = [];
-  document.querySelectorAll('.app-box input:checked').forEach(el=>{
-    selected.push(el.value);
-  });
+let app = document.querySelector('input[name="app"]:checked');
 
-  if(selected.length === 0){
-    alert("Select at least one application");
-    return;
-  }
+if(!app){
+  alert("Select one application");
+  return;
+}
 
-  let app = selected.join(",");
-
-  window.open(
-    `result.html?f=${f}&a=${a}&t=${t}&app=${app}`,
-    "_blank"
-  );
+window.open(
+  `result.html?f=${f}&a=${a}&t=${t}&app=${app.value}`,
+  "_blank"
+);
 }
 </script>
 
