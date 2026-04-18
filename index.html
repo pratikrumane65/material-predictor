@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Material Predictor</title>
+<title>Material System</title>
 
 <style>
 body{
@@ -21,7 +21,7 @@ body{
   margin:auto;
 }
 
-input, select{
+input{
   width:100%;
   padding:12px;
   margin:10px 0;
@@ -29,6 +29,30 @@ input, select{
   border:none;
 }
 
+/* RADIO STYLE */
+.opt{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:10px 0;
+  font-size:16px;
+}
+
+.opt input{
+  transform:scale(1.2);
+}
+
+/* SCROLL BOX */
+.scroll-box{
+  text-align:left;
+  max-height:220px;
+  overflow-y:auto;
+  padding:10px;
+  border-radius:10px;
+  background:#000;
+}
+
+/* BUTTON */
 button{
   width:100%;
   padding:12px;
@@ -36,6 +60,7 @@ button{
   border:none;
   border-radius:10px;
   font-size:16px;
+  margin-top:15px;
 }
 </style>
 </head>
@@ -50,20 +75,22 @@ button{
 <input id="area" placeholder="Area (mm²)">
 <input id="temp" placeholder="Temperature (°C)">
 
-<label>Select Application</label>
+<label style="margin-top:10px;display:block;">Select Application</label>
 
-<select id="app" size="5" style="background:#000;color:#fff;">
-  <option>Automotive</option>
-  <option>Aerospace</option>
-  <option>Structural</option>
-  <option>Marine</option>
-  <option>Biomedical</option>
-  <option>Tooling</option>
-  <option>Thermal</option>
-  <option>Electrical</option>
-  <option>Heavy Load</option>
-  <option>Lightweight</option>
-</select>
+<div class="scroll-box">
+
+<label class="opt"><input type="radio" name="app" value="Automotive"> Automotive</label>
+<label class="opt"><input type="radio" name="app" value="Aerospace"> Aerospace</label>
+<label class="opt"><input type="radio" name="app" value="Structural"> Structural</label>
+<label class="opt"><input type="radio" name="app" value="Marine"> Marine</label>
+<label class="opt"><input type="radio" name="app" value="Biomedical"> Biomedical</label>
+<label class="opt"><input type="radio" name="app" value="Tooling"> Tooling</label>
+<label class="opt"><input type="radio" name="app" value="Thermal"> Thermal</label>
+<label class="opt"><input type="radio" name="app" value="Electrical"> Electrical</label>
+<label class="opt"><input type="radio" name="app" value="Heavy Load"> Heavy Load</label>
+<label class="opt"><input type="radio" name="app" value="Lightweight"> Lightweight</label>
+
+</div>
 
 <button onclick="go()">Predict</button>
 
@@ -71,10 +98,19 @@ button{
 
 <script>
 function go(){
+
   let f = document.getElementById("force").value;
   let a = document.getElementById("area").value;
   let t = document.getElementById("temp").value;
-  let app = document.getElementById("app").value;
+
+  let selected = document.querySelector('input[name="app"]:checked');
+
+  if(!selected){
+    alert("Please select application");
+    return;
+  }
+
+  let app = selected.value;
 
   window.location.href =
     "result.html?f="+f+"&a="+a+"&t="+t+"&app="+app;
