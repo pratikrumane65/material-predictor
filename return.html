@@ -2,45 +2,78 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Done</title>
+<title>Analysis Complete</title>
 
 <style>
 body{
   margin:0;
   font-family:Arial;
+  background:black;
   color:white;
   text-align:center;
-  background:black;
 }
 
+/* SAME THEME BACKGROUND */
 .bg{
   position:fixed;
   inset:0;
   background:
+    radial-gradient(circle at 20% 20%, rgba(0,150,255,0.25), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(180,0,255,0.25), transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(0,255,200,0.15), transparent 40%),
     linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.95)),
     url('https://images.unsplash.com/photo-1581091215367-59ab6b4a3a85');
   background-size:cover;
   z-index:-1;
 }
 
+/* CARD */
 .container{
   margin-top:25vh;
-  background:rgba(0,0,0,0.7);
-  padding:20px;
+  background:rgba(20,20,20,0.85);
+  padding:25px;
   border-radius:15px;
   max-width:400px;
   margin-left:auto;
   margin-right:auto;
+  box-shadow:0 0 20px rgba(0,150,255,0.2);
 }
 
+/* SUCCESS ICON */
+.tick{
+  font-size:60px;
+  color:#00ff88;
+  text-shadow:0 0 15px rgba(0,255,136,0.8);
+  margin-bottom:10px;
+}
+
+/* TEXT */
+h2{
+  margin:10px 0;
+}
+
+p{
+  color:#ccc;
+}
+
+/* BUTTON */
 button{
-  padding:12px;
+  padding:12px 20px;
   border:none;
   border-radius:10px;
-  background:white;
+  background:linear-gradient(90deg,#00ff88,#00c6ff);
   color:black;
+  font-weight:bold;
+  margin-top:20px;
+  transition:0.3s;
 }
 
+button:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 15px rgba(0,255,136,0.6);
+}
+
+/* FOOTER */
 .footer{
   position:fixed;
   bottom:0;
@@ -58,9 +91,13 @@ button{
 
 <div class="container">
 
-<h2>✔ Analysis Completed</h2>
+<div class="tick">✔</div>
 
-<button onclick="home()">Return Home</button>
+<h2>Analysis Completed</h2>
+
+<p>Your material analysis has been successfully generated.</p>
+
+<button onclick="goHome()">Return to Home</button>
 
 </div>
 
@@ -69,8 +106,8 @@ Amrutvahini College of Engineering, Sangamner
 </div>
 
 <script>
-function home(){
-window.location.href="index.html";
+function goHome(){
+  window.location.href="index.html";
 }
 </script>
 
