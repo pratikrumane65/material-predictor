@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Material Project</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:black;
+  color:white;
+  text-align:center;
+}
+
+/* Background */
+.bg{
+  position:fixed;
+  inset:0;
+  background:
+  linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.95)),
+  url('https://images.unsplash.com/photo-1581091215367-59ab6b4a3a85');
+  background-size:cover;
+  z-index:-1;
+}
+
+/* Main box */
+.container{
+  margin:80px auto;
+  max-width:400px;
+  background:#111;
+  padding:20px;
+  border-radius:15px;
+}
+
+/* Button */
+button{
+  width:100%;
+  padding:12px;
+  margin-top:15px;
+  border:none;
+  border-radius:10px;
+  background:white;
+  color:black;
+  font-size:16px;
+}
+
+/* About */
+.about{
+  margin-top:30px;
+  text-align:left;
+}
+
+.about h3{
+  text-align:center;
+}
+
+/* Footer */
+.footer{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  padding:10px;
+  color:#aaa;
+  background:#000;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<h1>⚙️ Smart Material Selection & Analysis System</h1>
+
+<div class="container">
+
+<button onclick="openApp()">Calculate</button>
+
+<div class="about">
+<h3>About Us</h3>
+
+<p>Group Members:</p>
+
+<p>1. Pawar Subham Raju (469)</p>
+<p>2. Rumane Pratik Dnyaneshwar (470)</p>
+<p>3. Ayan Shaikh (471)</p>
+<p>4. Anjali Shinde (472)</p>
+
+</div>
+
+</div>
+
+<div class="footer">
+Amrutvahini College of Engineering, Sangamner
+</div>
+
+<script>
+function openApp(){
+  window.location.href = "main.html";  // your second page
+}
+</script>
+
+</body>
+</html>
