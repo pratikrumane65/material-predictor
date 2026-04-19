@@ -44,7 +44,6 @@ body{
   font-size:22px;
   font-weight:bold;
   margin-bottom:10px;
-  text-shadow:0 0 10px rgba(0,150,255,0.6);
 }
 
 .value{
@@ -83,7 +82,6 @@ button{
 
 <h2>📊 Material Analysis</h2>
 
-<!-- RESULT -->
 <div class="card" id="resultBox"></div>
 
 <!-- GRAPHS -->
@@ -111,7 +109,7 @@ let t = parseFloat(data.temp || 25);
 
 let stress = f / a;
 
-// MATERIAL DATABASE WITH COST
+// MATERIAL DATABASE
 const materials = [
 {name:"Plain Carbon Steel (40C8)", strength:380, density:7850, cost:80},
 {name:"Medium Carbon Steel (EN8)", strength:550, density:7850, cost:95},
@@ -131,6 +129,14 @@ let best = materials.reduce((a,b)=> a.strength>b.strength?a:b);
 // TEMPERATURE EFFECT
 let adjusted = best.strength * (1 - 0.002*(t-25));
 
+// COST STATUS LOGIC
+let costLimit = 500;
+let costStatus = "Safe";
+
+if(stress > best.strength || best.cost > costLimit){
+  costStatus = "Not Safe";
+}
+
 // OUTPUT
 document.getElementById("resultBox").innerHTML = `
 <div class="title">Material: ${best.name}</div>
@@ -139,36 +145,27 @@ document.getElementById("resultBox").innerHTML = `
 <div class="value"><b>Strength:</b> ${best.strength} MPa</div>
 <div class="value"><b>Density:</b> ${best.density} kg/m³</div>
 <div class="value"><b>Material Cost:</b> ₹${best.cost}/kg</div>
+
 <div class="value"><b>Adjusted Strength:</b> ${adjusted.toFixed(2)} MPa</div>
+
+<div class="value"><b>Cost Status:</b> 
+<span style="color:${costStatus=="Safe"?"#00ff88":"red"}">
+${costStatus}
+</span>
+</div>
 `;
 
-// GRAPH 1
+// GRAPHS
 new Chart(c1,{type:'bar',data:{labels:['Stress','Strength'],datasets:[{data:[stress,best.strength]}]}});
-
-// GRAPH 2
 new Chart(c2,{type:'bar',data:{labels:['Specific Strength'],datasets:[{data:[best.strength/best.density]}]}});
-
-// GRAPH 3
 new Chart(c3,{
 type:'line',
-data:{
-labels:[25,100,200,300],
-datasets:[{data:[
-best.strength,
-best.strength*0.9,
-best.strength*0.8,
-best.strength*0.7
-]}]
-}
+data:{labels:[25,100,200,300],datasets:[{data:[
+best.strength,best.strength*0.9,best.strength*0.8,best.strength*0.7
+]}]}
 });
-
-// GRAPH 4
 new Chart(c4,{type:'bar',data:{labels:['Original','Adjusted'],datasets:[{data:[best.strength,adjusted]}]}});
-
-// GRAPH 5
 new Chart(c5,{type:'bar',data:{labels:['Density'],datasets:[{data:[best.density]}]}});
-
-// GRAPH 6
 new Chart(c6,{type:'bar',data:{labels:['Performance Index'],datasets:[{data:[best.strength/best.density]}]}});
 
 // FINISH
