@@ -47,7 +47,11 @@ button{
 
 /* About */
 .about{
-  margin-top:30px;
+  margin:40px auto 100px;
+  max-width:400px;
+  background:#111;
+  padding:20px;
+  border-radius:15px;
   text-align:left;
 }
 
@@ -74,20 +78,25 @@ button{
 <h1>⚙️ Smart Material Selection & Analysis System</h1>
 
 <div class="container">
+  <button onclick="openApp()">Calculate</button>
+</div>
 
-<button onclick="openApp()">Calculate</button>
-
+<!-- ABOUT SECTION (BOTTOM) -->
 <div class="about">
+
 <h3>About Us</h3>
 
-<p>Group Members:</p>
+<p><b>Group Members:</b></p>
 
 <p>1. Pawar Subham Raju (469)</p>
 <p>2. Rumane Pratik Dnyaneshwar (470)</p>
 <p>3. Ayan Shaikh (471)</p>
 <p>4. Anjali Shinde (472)</p>
 
-</div>
+<br>
+
+<p><b>Guided by:</b><br>
+~ Dr. K. Dagale</p>
 
 </div>
 
@@ -97,7 +106,7 @@ Amrutvahini College of Engineering, Sangamner
 
 <script>
 function openApp(){
-  window.location.href = "main.html";  // your second page
+  window.location.href = "main.html";
 }
 </script>
 
