@@ -11,7 +11,6 @@ body{
   color:white;
   text-align:center;
   background:black;
-  overflow-x:hidden;
 }
 
 /* BACKGROUND */
@@ -25,26 +24,10 @@ body{
   z-index:-1;
 }
 
-/* TITLE (SHIFTED UP) */
+/* TITLE (NO ANIMATION) */
 #title{
   margin-top:14vh;
   font-size:28px;
-  white-space:nowrap;
-  overflow:hidden;
-  border-right:3px solid white;
-  width:0;
-  animation:
-    typing 3s steps(40,end) forwards,
-    blink 0.7s infinite;
-}
-
-@keyframes typing{
-  from{width:0}
-  to{width:100%}
-}
-
-@keyframes blink{
-  50%{border-color:transparent}
 }
 
 /* CARD */
@@ -54,10 +37,6 @@ body{
   border-radius:15px;
   max-width:400px;
   margin:25px auto;
-  opacity:0;
-  transform:translateY(30px);
-  animation:fadeUp 1s ease forwards;
-  animation-delay:3s;
 }
 
 /* BUTTON */
@@ -74,7 +53,6 @@ button{
 
 button:hover{
   transform:scale(1.05);
-  background:#ddd;
 }
 
 /* ABOUT */
@@ -85,26 +63,14 @@ button:hover{
   padding:20px;
   border-radius:15px;
   text-align:left;
-  opacity:0;
-  transform:translateY(30px);
-  animation:fadeUp 1s ease forwards;
-  animation-delay:3.5s;
 }
 
-/* GUIDED BY (CENTER BELOW NAMES) */
+/* GUIDED BY (MORE SPACE) */
 .guide{
-  margin-top:20px;
+  margin-top:35px; /* increased space */
   text-align:center;
   font-size:16px;
   color:#ccc;
-}
-
-/* ANIMATION */
-@keyframes fadeUp{
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
 }
 
 /* FOOTER */
@@ -123,7 +89,6 @@ button:hover{
 
 <div class="bg"></div>
 
-<!-- TITLE -->
 <h1 id="title">⚙️ Smart Material Selection & Analysis System</h1>
 
 <div class="container">
@@ -133,12 +98,11 @@ button:hover{
 <div class="about">
 <h3 style="text-align:center;">About Us</h3>
 
-<p>1. Pawar Subham Raju (469)</p>
-<p>2. Rumane Pratik Dnyaneshwar (470)</p>
-<p>3. Ayan Shaikh (471)</p>
-<p>4. Anjali Shinde (472)</p>
+<p>1. Mr. Pawar Subham Raju (469)</p>
+<p>2. Mr. Rumane Pratik Dnyaneshwar (470)</p>
+<p>3. Mr. Ayan Shaikh (471)</p>
+<p>4. Miss. Anjali Shinde (472)</p>
 
-<!-- ✅ GUIDED BY CENTERED BELOW -->
 <div class="guide">
 Guided by ~ Dr. K. Dagale
 </div>
