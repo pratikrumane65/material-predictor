@@ -7,11 +7,27 @@
 <style>
 body{background:black;color:white;text-align:center;font-family:Arial;}
 
-.card{background:#111;padding:20px;border-radius:15px;margin:20px auto;max-width:400px;}
+.card{
+  background:#111;
+  padding:20px;
+  border-radius:15px;
+  margin:20px auto;
+  max-width:400px;
+}
 
-button{padding:12px;border:none;border-radius:10px;background:white;color:black;margin-top:20px;}
+button{
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:white;
+  color:black;
+  margin-top:20px;
+}
 
-canvas{background:white;border-radius:10px;}
+canvas{
+  background:white;
+  border-radius:10px;
+}
 </style>
 </head>
 
@@ -38,16 +54,16 @@ let app=data.app;
 let stress=f/a;
 
 const db={
-"Automotive":["EN8 Steel",550],
-"Aerospace":["Al 7075",500],
-"Structural":["40C8 Steel",380],
-"Marine":["SS316",290],
-"Biomedical":["Ti-6Al-4V",817],
-"Tooling":["D2 Steel",700],
-"Thermal":["Copper C110",220],
-"Electrical":["Al 6061",310],
-"Heavy Load":["EN24 Steel",850],
-"Lightweight":["Mg AZ31",260]
+"Automotive":["Medium Carbon Steel (EN8)",550],
+"Aerospace":["Aluminium Alloy (7075-T6)",500],
+"Structural":["Plain Carbon Steel (40C8)",380],
+"Marine":["Stainless Steel (SS316)",290],
+"Biomedical":["Titanium Alloy (Ti-6Al-4V)",817],
+"Tooling":["Tool Steel (D2)",700],
+"Thermal":["Copper Alloy (C110)",220],
+"Electrical":["Aluminium Alloy (6061)",310],
+"Heavy Load":["Alloy Steel (EN24)",850],
+"Lightweight":["Magnesium Alloy (AZ31)",260]
 };
 
 let m=db[app];
@@ -55,7 +71,9 @@ let m=db[app];
 let strength=m[1];
 
 document.getElementById("resultBox").innerHTML=
-"Material: "+m[0]+"<br>Stress: "+stress.toFixed(2)+" MPa<br>Strength: "+strength+" MPa";
+"<b>Material:</b> "+m[0]+"<br>"+
+"<b>Stress:</b> "+stress.toFixed(2)+" MPa<br>"+
+"<b>Strength:</b> "+strength+" MPa";
 
 new Chart(chart,{
 type:'bar',
