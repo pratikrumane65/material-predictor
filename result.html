@@ -15,29 +15,42 @@ body{
   text-align:center;
 }
 
-/* BACKGROUND */
+/* SAME BACKGROUND */
 .bg{
   position:fixed;
   inset:0;
   background:
-  linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.95)),
-  url('https://images.unsplash.com/photo-1581091215367-59ab6b4a3a85');
+    radial-gradient(circle at 20% 20%, rgba(0,150,255,0.25), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(180,0,255,0.25), transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(0,255,200,0.15), transparent 40%),
+    linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.95)),
+    url('https://images.unsplash.com/photo-1581091215367-59ab6b4a3a85');
   background-size:cover;
   z-index:-1;
 }
 
-/* RESULT CARD */
+/* CARD */
 .card{
-  background:rgba(0,0,0,0.7);
+  background:rgba(20,20,20,0.8);
   padding:25px;
   border-radius:15px;
   margin:25px auto;
   max-width:420px;
+  box-shadow:0 0 15px rgba(0,150,255,0.2);
 }
 
 /* TEXT */
-.title{font-size:22px;font-weight:bold;margin-bottom:10px;}
-.value{font-size:20px;margin:5px 0;}
+.title{
+  font-size:22px;
+  font-weight:bold;
+  margin-bottom:10px;
+  text-shadow:0 0 10px rgba(0,150,255,0.6);
+}
+
+.value{
+  font-size:18px;
+  margin:5px 0;
+}
 
 /* GRAPH */
 canvas{
@@ -51,9 +64,9 @@ button{
   padding:12px 20px;
   border:none;
   border-radius:10px;
-  background:white;
-  color:black;
-  margin:20px;
+  background:linear-gradient(90deg,#00c6ff,#7b2ff7);
+  color:white;
+  margin-top:20px;
 }
 
 /* FOOTER */
@@ -70,43 +83,11 @@ button{
 
 <h2>📊 Material Analysis</h2>
 
-<!-- RESULT -->
 <div class="card" id="resultBox"></div>
 
-<!-- GRAPH 1 -->
 <div class="card">
-<h3>1. Stress vs Strength</h3>
+<h3>Stress vs Strength</h3>
 <canvas id="c1"></canvas>
-</div>
-
-<!-- GRAPH 2 -->
-<div class="card">
-<h3>2. Specific Strength</h3>
-<canvas id="c2"></canvas>
-</div>
-
-<!-- GRAPH 3 -->
-<div class="card">
-<h3>3. Temperature Effect</h3>
-<canvas id="c3"></canvas>
-</div>
-
-<!-- GRAPH 4 -->
-<div class="card">
-<h3>4. Strength Comparison</h3>
-<canvas id="c4"></canvas>
-</div>
-
-<!-- GRAPH 5 -->
-<div class="card">
-<h3>5. Density</h3>
-<canvas id="c5"></canvas>
-</div>
-
-<!-- GRAPH 6 -->
-<div class="card">
-<h3>6. Performance Index</h3>
-<canvas id="c6"></canvas>
 </div>
 
 <button onclick="finish()">Finish</button>
@@ -122,92 +103,37 @@ let data = JSON.parse(localStorage.getItem("data"));
 
 let f = parseFloat(data.force);
 let a = parseFloat(data.area);
-let t = parseFloat(data.temp || 25);
+let stress = f/a;
 
-let stress = f / a;
-
-// MATERIAL DATABASE
+// MATERIAL DB
 const materials = [
-{name:"Plain Carbon Steel (40C8)", strength:380, density:7850},
-{name:"Medium Carbon Steel (EN8)", strength:550, density:7850},
-{name:"Alloy Steel (EN24)", strength:850, density:7850},
-{name:"Aluminium Alloy (7075-T6)", strength:500, density:2810},
-{name:"Aluminium Alloy (6061)", strength:310, density:2700},
-{name:"Titanium Alloy (Ti-6Al-4V)", strength:817, density:4430},
-{name:"Stainless Steel (SS316)", strength:290, density:8000},
-{name:"Copper Alloy (C110)", strength:220, density:8960},
-{name:"Tool Steel (D2)", strength:700, density:7700},
-{name:"Magnesium Alloy (AZ31)", strength:260, density:1770}
+{name:"Plain Carbon Steel (40C8)", strength:380},
+{name:"Medium Carbon Steel (EN8)", strength:550},
+{name:"Alloy Steel (EN24)", strength:850},
+{name:"Aluminium Alloy (7075-T6)", strength:500},
+{name:"Titanium Alloy (Ti-6Al-4V)", strength:817}
 ];
 
-// SELECT BEST (simple logic)
-let best = materials[0];
-
-materials.forEach(m=>{
-  if(m.strength > best.strength) best = m;
-});
-
-// TEMPERATURE EFFECT
-let adjusted = best.strength * (1 - 0.002*(t-25));
+// SELECT BEST
+let best = materials.reduce((a,b)=> a.strength>b.strength?a:b);
 
 // OUTPUT
 document.getElementById("resultBox").innerHTML = `
 <div class="title">${best.name}</div>
 <div class="value">Stress: ${stress.toFixed(2)} MPa</div>
 <div class="value">Strength: ${best.strength} MPa</div>
-<div class="value">Density: ${best.density} kg/m³</div>
-<div class="value">Adjusted Strength: ${adjusted.toFixed(2)} MPa</div>
 `;
 
-// GRAPH 1
+// GRAPH
 new Chart(c1,{
 type:'bar',
 data:{labels:['Stress','Strength'],datasets:[{data:[stress,best.strength]}]}
-});
-
-// GRAPH 2
-new Chart(c2,{
-type:'bar',
-data:{labels:['Specific Strength'],datasets:[{data:[best.strength/best.density]}]}
-});
-
-// GRAPH 3
-new Chart(c3,{
-type:'line',
-data:{
-labels:[25,100,200,300],
-datasets:[{data:[
-best.strength,
-best.strength*0.9,
-best.strength*0.8,
-best.strength*0.7
-]}]
-}
-});
-
-// GRAPH 4
-new Chart(c4,{
-type:'bar',
-data:{labels:['Original','Adjusted'],datasets:[{data:[best.strength,adjusted]}]}
-});
-
-// GRAPH 5
-new Chart(c5,{
-type:'bar',
-data:{labels:['Density'],datasets:[{data:[best.density]}]}
-});
-
-// GRAPH 6
-new Chart(c6,{
-type:'bar',
-data:{labels:['Performance Index'],datasets:[{data:[best.strength/best.density]}]}
 });
 
 // FINISH
 function finish(){
 window.location.href="return.html";
 }
-
 </script>
 
 </body>
