@@ -11,6 +11,7 @@ body{
   color:white;
   text-align:center;
   background:black;
+  overflow-x:hidden;
 }
 
 /* BACKGROUND */
@@ -24,9 +25,26 @@ body{
   z-index:-1;
 }
 
-/* HEADING */
-h1{
-  margin-top:20vh;
+/* TITLE (SHIFTED UP) */
+#title{
+  margin-top:14vh;
+  font-size:28px;
+  white-space:nowrap;
+  overflow:hidden;
+  border-right:3px solid white;
+  width:0;
+  animation:
+    typing 3s steps(40,end) forwards,
+    blink 0.7s infinite;
+}
+
+@keyframes typing{
+  from{width:0}
+  to{width:100%}
+}
+
+@keyframes blink{
+  50%{border-color:transparent}
 }
 
 /* CARD */
@@ -35,7 +53,11 @@ h1{
   padding:20px;
   border-radius:15px;
   max-width:400px;
-  margin:20px auto;
+  margin:25px auto;
+  opacity:0;
+  transform:translateY(30px);
+  animation:fadeUp 1s ease forwards;
+  animation-delay:3s;
 }
 
 /* BUTTON */
@@ -47,26 +69,42 @@ button{
   background:white;
   color:black;
   font-size:16px;
+  transition:0.3s;
+}
+
+button:hover{
+  transform:scale(1.05);
+  background:#ddd;
 }
 
 /* ABOUT */
 .about{
-  margin:40px auto 120px;
+  margin:40px auto 80px;
   max-width:400px;
   background:rgba(0,0,0,0.7);
   padding:20px;
   border-radius:15px;
   text-align:left;
+  opacity:0;
+  transform:translateY(30px);
+  animation:fadeUp 1s ease forwards;
+  animation-delay:3.5s;
 }
 
-/* GUIDED BY (NEW FIXED CENTER) */
+/* GUIDED BY (CENTER BELOW NAMES) */
 .guide{
-  position:fixed;
-  bottom:45px;
-  width:100%;
+  margin-top:20px;
   text-align:center;
-  font-size:15px;
+  font-size:16px;
   color:#ccc;
+}
+
+/* ANIMATION */
+@keyframes fadeUp{
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
 }
 
 /* FOOTER */
@@ -85,7 +123,8 @@ button{
 
 <div class="bg"></div>
 
-<h1>⚙️ Smart Material Selection & Analysis System</h1>
+<!-- TITLE -->
+<h1 id="title">⚙️ Smart Material Selection & Analysis System</h1>
 
 <div class="container">
 <button onclick="openApp()">Calculate</button>
@@ -98,11 +137,12 @@ button{
 <p>2. Rumane Pratik Dnyaneshwar (470)</p>
 <p>3. Ayan Shaikh (471)</p>
 <p>4. Anjali Shinde (472)</p>
-</div>
 
-<!-- ✅ GUIDED BY AT BOTTOM CENTER -->
+<!-- ✅ GUIDED BY CENTERED BELOW -->
 <div class="guide">
 Guided by ~ Dr. K. Dagale
+</div>
+
 </div>
 
 <div class="footer">
