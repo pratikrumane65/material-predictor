@@ -11,6 +11,13 @@ body{
   color:white;
   text-align:center;
   background:black;
+
+  /* ✅ PERFECT CENTER */
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
 }
 
 /* BACKGROUND */
@@ -29,8 +36,8 @@ body{
 
 /* TITLE */
 h1{
-  margin-top:18vh;
-  font-size:28px;
+  font-size:26px;
+  margin-bottom:30px;
   text-shadow:0 0 10px rgba(0,150,255,0.6);
 }
 
@@ -39,8 +46,8 @@ h1{
   background:rgba(20,20,20,0.85);
   padding:20px;
   border-radius:15px;
-  max-width:400px;
-  margin:30px auto;
+  width:90%;
+  max-width:350px;
   box-shadow:0 0 15px rgba(0,150,255,0.2);
 }
 
@@ -64,7 +71,7 @@ button{
 <h1>⚙️ Smart Material Selection & Analysis System</h1>
 
 <div class="container">
-<button onclick="openApp()">Calculate</button>
+  <button onclick="openApp()">Calculate</button>
 </div>
 
 <script>
