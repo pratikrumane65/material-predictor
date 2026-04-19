@@ -1,217 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Material Analysis</title>
+<title>Result</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{
-  margin:0;
-  font-family: Arial;
-  color:white;
-  text-align:center;
-  background:black;
-}
+body{background:black;color:white;text-align:center;font-family:Arial;}
 
-/* ANIMATED BACKGROUND */
-.bg{
-  position:fixed;
-  inset:0;
-  background:
-    linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.95)),
-    url('https://images.unsplash.com/photo-1581091215367-59ab6b4a3a85');
-  background-size:cover;
-  background-position:center;
-  animation:move 15s ease-in-out infinite alternate;
-  z-index:-1;
-}
+.card{background:#111;padding:20px;border-radius:15px;margin:20px auto;max-width:400px;}
 
-@keyframes move{
-  from{transform:scale(1)}
-  to{transform:scale(1.05)}
-}
+button{padding:12px;border:none;border-radius:10px;background:white;color:black;margin-top:20px;}
 
-/* CARD */
-.card{
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(10px);
-  padding:20px;
-  border-radius:15px;
-  margin:20px auto;
-  max-width:420px;
-}
-
-/* TEXT */
-.label{
-  font-weight:bold;
-  font-size:22px;
-}
-
-.value{
-  font-size:20px;
-  margin-bottom:10px;
-  display:block;
-}
-
-/* STATUS COLORS */
-.safe{ color:#00ff88; font-weight:bold; }
-.risk{ color:#ff4444; font-weight:bold; }
-
-/* GRAPH */
-canvas{
-  background:white;
-  border-radius:10px;
-  margin-top:10px;
-}
-
-/* FOOTER */
-.footer{
-  margin-top:20px;
-  font-size:14px;
-  color:#aaa;
-}
+canvas{background:white;border-radius:10px;}
 </style>
 </head>
 
 <body>
 
-<div class="bg"></div>
-
-<h1>📊 Material Analysis</h1>
+<h2>Material Analysis</h2>
 
 <div class="card" id="resultBox"></div>
 
 <div class="card">
-<h2>1. Stress vs Strength</h2>
-<canvas id="c1"></canvas>
+<canvas id="chart"></canvas>
 </div>
 
-<div class="card">
-<h2>2. Specific Strength</h2>
-<canvas id="c2"></canvas>
-</div>
-
-<div class="card">
-<h2>3. Temperature Effect</h2>
-<canvas id="c3"></canvas>
-</div>
-
-<div class="card">
-<h2>4. Safety Margin</h2>
-<canvas id="c4"></canvas>
-</div>
-
-<div class="footer">
-~AVCOE, Roll no {69 70 71 72}
-</div>
+<button onclick="finish()">Finish</button>
 
 <script>
 
-// LOAD DATA
-let raw = localStorage.getItem("data");
-if (!raw){
-  document.body.innerHTML="<h2>No Data Found</h2>";
-  throw "error";
-}
+let data=JSON.parse(localStorage.getItem("data"));
 
-const data = JSON.parse(raw);
+let f=parseFloat(data.force);
+let a=parseFloat(data.area);
+let app=data.app;
 
-let f = parseFloat(data.force);
-let a = parseFloat(data.area);
-let temp = data.temp || 25;
-let app = data.app;
+let stress=f/a;
 
-let stress = f/a;
-
-// MATERIAL DB
-const db = {
-  "Automotive": {name:"Medium Carbon Steel (EN8)", strength:550, density:7850},
-  "Aerospace": {name:"Aluminium Alloy (7075-T6)", strength:500, density:2810},
-  "Structural": {name:"Plain Carbon Steel (40C8)", strength:380, density:7850},
-  "Marine": {name:"Stainless Steel (SS316)", strength:290, density:8000},
-  "Biomedical": {name:"Titanium Alloy (Ti-6Al-4V)", strength:817, density:4430},
-  "Tooling": {name:"Tool Steel (D2)", strength:700, density:7700},
-  "Thermal": {name:"Copper Alloy (C110)", strength:220, density:8960},
-  "Electrical": {name:"Aluminium Alloy (6061)", strength:310, density:2700},
-  "Heavy Load": {name:"Alloy Steel (EN24)", strength:850, density:7850},
-  "Lightweight": {name:"Magnesium Alloy (AZ31)", strength:260, density:1770}
+const db={
+"Automotive":["EN8 Steel",550],
+"Aerospace":["Al 7075",500],
+"Structural":["40C8 Steel",380],
+"Marine":["SS316",290],
+"Biomedical":["Ti-6Al-4V",817],
+"Tooling":["D2 Steel",700],
+"Thermal":["Copper C110",220],
+"Electrical":["Al 6061",310],
+"Heavy Load":["EN24 Steel",850],
+"Lightweight":["Mg AZ31",260]
 };
 
-let m = db[app];
+let m=db[app];
 
-let strength = m.strength;
-let density = m.density;
+let strength=m[1];
 
-// TEMP EFFECT
-let strength_temp = strength * (1 - 0.002*(temp-25));
+document.getElementById("resultBox").innerHTML=
+"Material: "+m[0]+"<br>Stress: "+stress.toFixed(2)+" MPa<br>Strength: "+strength+" MPa";
 
-// SAFETY
-let margin = strength - stress;
-let status = margin > 0 ? "SAFE" : "FAIL";
-let statusClass = margin > 0 ? "safe" : "risk";
-
-// OUTPUT
-document.getElementById("resultBox").innerHTML = `
-<span class="label">Material:</span>
-<span class="value">${m.name}</span>
-
-<span class="label">Yield Strength:</span>
-<span class="value">${strength} MPa</span>
-
-<span class="label">Density:</span>
-<span class="value">${density} kg/m³</span>
-
-<span class="label">Applied Stress:</span>
-<span class="value">${stress.toFixed(2)} MPa</span>
-
-<span class="label">Status:</span>
-<span class="value ${statusClass}">${status}</span>
-`;
-
-// CHART 1
-new Chart(c1,{
+new Chart(chart,{
 type:'bar',
-data:{
-labels:['Stress','Strength'],
-datasets:[{data:[stress,strength]}]
-},
-options:{animation:{duration:1500}}
+data:{labels:['Stress','Strength'],datasets:[{data:[stress,strength]}]}
 });
 
-// CHART 2
-new Chart(c2,{
-type:'bar',
-data:{
-labels:['Specific Strength'],
-datasets:[{data:[strength/density]}]
+function finish(){
+window.location.href="return.html";
 }
-});
-
-// CHART 3
-new Chart(c3,{
-type:'line',
-data:{
-labels:[25,100,200,300],
-datasets:[{
-data:[
-strength,
-strength*0.9,
-strength*0.8,
-strength*0.7
-]
-}]
-}
-});
-
-// CHART 4
-new Chart(c4,{
-type:'bar',
-data:{
-labels:['Margin'],
-datasets:[{data:[margin]}]
-}
-});
 
 </script>
 
