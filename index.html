@@ -13,30 +13,37 @@ body{
   background:black;
 }
 
-/* BACKGROUND */
+/* 🔥 3-COLOR BACKGROUND */
 .bg{
   position:fixed;
   inset:0;
   background:
+    radial-gradient(circle at 20% 20%, rgba(0,150,255,0.25), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(180,0,255,0.25), transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(0,255,200,0.15), transparent 40%),
     linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.95)),
     url('https://images.unsplash.com/photo-1581091215367-59ab6b4a3a85');
   background-size:cover;
   z-index:-1;
 }
 
-/* TITLE (NO ANIMATION) */
+/* TITLE */
 #title{
   margin-top:14vh;
-  font-size:28px;
+  font-size:30px;
+  font-weight:bold;
+  color:white;
+  text-shadow:0 0 10px rgba(0,150,255,0.6);
 }
 
 /* CARD */
 .container{
-  background:rgba(0,0,0,0.7);
+  background:rgba(20,20,20,0.8);
   padding:20px;
   border-radius:15px;
   max-width:400px;
   margin:25px auto;
+  box-shadow:0 0 15px rgba(0,150,255,0.2);
 }
 
 /* BUTTON */
@@ -45,29 +52,31 @@ button{
   padding:12px;
   border:none;
   border-radius:10px;
-  background:white;
-  color:black;
+  background:linear-gradient(90deg,#00c6ff,#7b2ff7);
+  color:white;
   font-size:16px;
   transition:0.3s;
 }
 
 button:hover{
   transform:scale(1.05);
+  box-shadow:0 0 15px rgba(0,150,255,0.6);
 }
 
 /* ABOUT */
 .about{
   margin:40px auto 80px;
   max-width:400px;
-  background:rgba(0,0,0,0.7);
+  background:rgba(20,20,20,0.8);
   padding:20px;
   border-radius:15px;
   text-align:left;
+  box-shadow:0 0 15px rgba(180,0,255,0.2);
 }
 
-/* GUIDED BY (MORE SPACE) */
+/* GUIDED BY */
 .guide{
-  margin-top:35px; /* increased space */
+  margin-top:35px;
   text-align:center;
   font-size:16px;
   color:#ccc;
