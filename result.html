@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advanced Material Analysis</title>
+<title>Material Analysis</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -14,6 +15,7 @@ body{
   text-align:center;
 }
 
+/* BACKGROUND */
 .bg{
   position:fixed;
   inset:0;
@@ -24,34 +26,41 @@ body{
   z-index:-1;
 }
 
+/* RESULT CARD */
 .card{
   background:rgba(0,0,0,0.7);
-  padding:20px;
+  padding:25px;
   border-radius:15px;
-  margin:20px auto;
+  margin:25px auto;
   max-width:420px;
 }
 
-.label{font-weight:bold;font-size:20px;}
-.value{font-size:18px;}
+/* TEXT */
+.title{font-size:22px;font-weight:bold;margin-bottom:10px;}
+.value{font-size:20px;margin:5px 0;}
 
+/* GRAPH */
 canvas{
   background:white;
   border-radius:10px;
   margin-top:10px;
 }
 
+/* BUTTON */
 button{
   padding:12px 20px;
   border:none;
   border-radius:10px;
   background:white;
   color:black;
-  margin-top:20px;
+  margin:20px;
 }
 
-.safe{color:#00ff88;}
-.fail{color:#ff4444;}
+/* FOOTER */
+.footer{
+  color:#aaa;
+  margin-top:10px;
+}
 </style>
 </head>
 
@@ -59,148 +68,142 @@ button{
 
 <div class="bg"></div>
 
-<h2>🚀 Advanced Material Analysis Dashboard</h2>
+<h2>📊 Material Analysis</h2>
 
-<div class="card" id="mainResult"></div>
+<!-- RESULT -->
+<div class="card" id="resultBox"></div>
 
+<!-- GRAPH 1 -->
 <div class="card">
-<h3>🏆 Top 3 Suggested Materials</h3>
-<div id="top3"></div>
-</div>
-
-<div class="card">
-<h3>📊 Ashby Chart (Strength vs Density)</h3>
-<canvas id="ashby"></canvas>
-</div>
-
-<div class="card">
-<h3>📈 Stress vs Strength</h3>
+<h3>1. Stress vs Strength</h3>
 <canvas id="c1"></canvas>
 </div>
 
+<!-- GRAPH 2 -->
 <div class="card">
-<h3>📈 Temperature Effect</h3>
+<h3>2. Specific Strength</h3>
 <canvas id="c2"></canvas>
 </div>
 
+<!-- GRAPH 3 -->
 <div class="card">
-<h3>📈 Safety Margin</h3>
+<h3>3. Temperature Effect</h3>
 <canvas id="c3"></canvas>
 </div>
 
+<!-- GRAPH 4 -->
+<div class="card">
+<h3>4. Strength Comparison</h3>
+<canvas id="c4"></canvas>
+</div>
+
+<!-- GRAPH 5 -->
+<div class="card">
+<h3>5. Density</h3>
+<canvas id="c5"></canvas>
+</div>
+
+<!-- GRAPH 6 -->
+<div class="card">
+<h3>6. Performance Index</h3>
+<canvas id="c6"></canvas>
+</div>
+
 <button onclick="finish()">Finish</button>
+
+<div class="footer">
+~AVCOE, Roll no {69 70 71 72}
+</div>
 
 <script>
 
 // INPUT
 let data = JSON.parse(localStorage.getItem("data"));
+
 let f = parseFloat(data.force);
 let a = parseFloat(data.area);
 let t = parseFloat(data.temp || 25);
 
-let stress = f/a;
+let stress = f / a;
 
-// MATERIAL DB
+// MATERIAL DATABASE
 const materials = [
-{name:"EN8 Steel", strength:550, density:7850},
-{name:"Al 7075-T6", strength:500, density:2810},
-{name:"40C8 Steel", strength:380, density:7850},
-{name:"SS316", strength:290, density:8000},
-{name:"Ti-6Al-4V", strength:817, density:4430},
-{name:"D2 Steel", strength:700, density:7700},
-{name:"Copper C110", strength:220, density:8960},
-{name:"Al 6061", strength:310, density:2700},
-{name:"EN24 Steel", strength:850, density:7850},
-{name:"Mg AZ31", strength:260, density:1770}
+{name:"Plain Carbon Steel (40C8)", strength:380, density:7850},
+{name:"Medium Carbon Steel (EN8)", strength:550, density:7850},
+{name:"Alloy Steel (EN24)", strength:850, density:7850},
+{name:"Aluminium Alloy (7075-T6)", strength:500, density:2810},
+{name:"Aluminium Alloy (6061)", strength:310, density:2700},
+{name:"Titanium Alloy (Ti-6Al-4V)", strength:817, density:4430},
+{name:"Stainless Steel (SS316)", strength:290, density:8000},
+{name:"Copper Alloy (C110)", strength:220, density:8960},
+{name:"Tool Steel (D2)", strength:700, density:7700},
+{name:"Magnesium Alloy (AZ31)", strength:260, density:1770}
 ];
 
-// AI SCORE FUNCTION
-function score(m){
-let s = m.strength;
-let d = m.density;
-let eff = s/d;
+// SELECT BEST (simple logic)
+let best = materials[0];
 
-let tempEffect = s*(1-0.002*(t-25));
-
-return (eff*1000) + tempEffect - stress;
-}
-
-// SORT MATERIALS
-materials.forEach(m => m.score = score(m));
-materials.sort((a,b)=>b.score-a.score);
-
-// TOP 3
-let top3 = materials.slice(0,3);
-
-// MAIN RESULT
-let best = top3[0];
-
-let status = best.strength > stress ? "SAFE" : "FAIL";
-
-document.getElementById("mainResult").innerHTML = `
-<b>Best Material:</b><br>${best.name}<br><br>
-Stress: ${stress.toFixed(2)} MPa<br>
-Strength: ${best.strength} MPa<br>
-AI Score: ${best.score.toFixed(2)}<br>
-Status: <span class="${status=='SAFE'?'safe':'fail'}">${status}</span>
-`;
-
-// SHOW TOP 3
-document.getElementById("top3").innerHTML = top3.map((m,i)=>
-`${i+1}. ${m.name} (Score: ${m.score.toFixed(1)})`
-).join("<br>");
-
-// ASHBY CHART
-new Chart(ashby,{
-type:'scatter',
-data:{
-datasets:[{
-label:"Materials",
-data:materials.map(m=>({x:m.density,y:m.strength}))
-}]
-},
-options:{
-scales:{
-x:{title:{display:true,text:"Density"}},
-y:{title:{display:true,text:"Strength"}}
-}
-}
+materials.forEach(m=>{
+  if(m.strength > best.strength) best = m;
 });
+
+// TEMPERATURE EFFECT
+let adjusted = best.strength * (1 - 0.002*(t-25));
+
+// OUTPUT
+document.getElementById("resultBox").innerHTML = `
+<div class="title">${best.name}</div>
+<div class="value">Stress: ${stress.toFixed(2)} MPa</div>
+<div class="value">Strength: ${best.strength} MPa</div>
+<div class="value">Density: ${best.density} kg/m³</div>
+<div class="value">Adjusted Strength: ${adjusted.toFixed(2)} MPa</div>
+`;
 
 // GRAPH 1
 new Chart(c1,{
 type:'bar',
-data:{
-labels:['Stress','Best Strength'],
-datasets:[{data:[stress,best.strength]}]
-}
+data:{labels:['Stress','Strength'],datasets:[{data:[stress,best.strength]}]}
 });
 
 // GRAPH 2
 new Chart(c2,{
-type:'line',
-data:{
-labels:[25,100,200,300],
-datasets:[{
-data:[
-best.strength,
-best.strength*0.9,
-best.strength*0.8,
-best.strength*0.7
-]
-}]
-}
+type:'bar',
+data:{labels:['Specific Strength'],datasets:[{data:[best.strength/best.density]}]}
 });
 
 // GRAPH 3
 new Chart(c3,{
-type:'bar',
+type:'line',
 data:{
-labels:['Margin'],
-datasets:[{data:[best.strength-stress]}]
+labels:[25,100,200,300],
+datasets:[{data:[
+best.strength,
+best.strength*0.9,
+best.strength*0.8,
+best.strength*0.7
+]}]
 }
 });
 
+// GRAPH 4
+new Chart(c4,{
+type:'bar',
+data:{labels:['Original','Adjusted'],datasets:[{data:[best.strength,adjusted]}]}
+});
+
+// GRAPH 5
+new Chart(c5,{
+type:'bar',
+data:{labels:['Density'],datasets:[{data:[best.density]}]}
+});
+
+// GRAPH 6
+new Chart(c6,{
+type:'bar',
+data:{labels:['Performance Index'],datasets:[{data:[best.strength/best.density]}]}
+});
+
+// FINISH
 function finish(){
 window.location.href="return.html";
 }
