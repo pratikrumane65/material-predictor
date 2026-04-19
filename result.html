@@ -15,7 +15,7 @@ body{
   text-align:center;
 }
 
-/* 🔥 SAME 3-COLOR BACKGROUND */
+/* BACKGROUND */
 .bg{
   position:fixed;
   inset:0;
@@ -97,7 +97,7 @@ button{
 <button onclick="finish()">Finish</button>
 
 <div class="footer">
-............................
+Dept. Mechanical Engineering, AVCOE, Sangamner
 </div>
 
 <script>
@@ -111,33 +111,35 @@ let t = parseFloat(data.temp || 25);
 
 let stress = f / a;
 
-// MATERIAL DB
+// MATERIAL DATABASE WITH COST
 const materials = [
-{name:"Plain Carbon Steel (40C8)", strength:380, density:7850},
-{name:"Medium Carbon Steel (EN8)", strength:550, density:7850},
-{name:"Alloy Steel (EN24)", strength:850, density:7850},
-{name:"Aluminium Alloy (7075-T6)", strength:500, density:2810},
-{name:"Aluminium Alloy (6061)", strength:310, density:2700},
-{name:"Titanium Alloy (Ti-6Al-4V)", strength:817, density:4430},
-{name:"Stainless Steel (SS316)", strength:290, density:8000},
-{name:"Copper Alloy (C110)", strength:220, density:8960},
-{name:"Tool Steel (D2)", strength:700, density:7700},
-{name:"Magnesium Alloy (AZ31)", strength:260, density:1770}
+{name:"Plain Carbon Steel (40C8)", strength:380, density:7850, cost:80},
+{name:"Medium Carbon Steel (EN8)", strength:550, density:7850, cost:95},
+{name:"Alloy Steel (EN24)", strength:850, density:7850, cost:150},
+{name:"Aluminium Alloy (7075-T6)", strength:500, density:2810, cost:300},
+{name:"Aluminium Alloy (6061)", strength:310, density:2700, cost:250},
+{name:"Titanium Alloy (Ti-6Al-4V)", strength:817, density:4430, cost:1200},
+{name:"Stainless Steel (SS316)", strength:290, density:8000, cost:200},
+{name:"Copper Alloy (C110)", strength:220, density:8960, cost:700},
+{name:"Tool Steel (D2)", strength:700, density:7700, cost:350},
+{name:"Magnesium Alloy (AZ31)", strength:260, density:1770, cost:500}
 ];
 
-// SELECT BEST (based on strength)
+// SELECT BEST
 let best = materials.reduce((a,b)=> a.strength>b.strength?a:b);
 
-// TEMP EFFECT
+// TEMPERATURE EFFECT
 let adjusted = best.strength * (1 - 0.002*(t-25));
 
 // OUTPUT
 document.getElementById("resultBox").innerHTML = `
-<div class="title">${best.name}</div>
-<div class="value">Stress: ${stress.toFixed(2)} MPa</div>
-<div class="value">Strength: ${best.strength} MPa</div>
-<div class="value">Density: ${best.density} kg/m³</div>
-<div class="value">Adjusted Strength: ${adjusted.toFixed(2)} MPa</div>
+<div class="title">Material: ${best.name}</div>
+
+<div class="value"><b>Stress:</b> ${stress.toFixed(2)} MPa</div>
+<div class="value"><b>Strength:</b> ${best.strength} MPa</div>
+<div class="value"><b>Density:</b> ${best.density} kg/m³</div>
+<div class="value"><b>Material Cost:</b> ₹${best.cost}/kg</div>
+<div class="value"><b>Adjusted Strength:</b> ${adjusted.toFixed(2)} MPa</div>
 `;
 
 // GRAPH 1
